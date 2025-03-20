@@ -35,8 +35,24 @@ services:
       - frontend_pnpm-store:/app/.pnpm-store
     command: pnpm frontend dev -H 0.0.0.0
 
+  backend:
+    <<: *root
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 4001
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+    ports:
+      - "4001:4001"
+    volumes:
+      - .:/app:cached
+      - backend_node_modules:/app/node_modules
+      - backend_pnpm-store:/app/.pnpm-store
+    command: pnpm backend dev -H 0.0.0.0
+
 volumes:
   node_modules:
   pnpm-store:
   frontend_node_modules:
   frontend_pnpm-store:
+  backend_node_modules:
+  backend_pnpm-store:

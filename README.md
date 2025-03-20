@@ -9,6 +9,7 @@
 - MySQL
 - NextJS
 - Material UI
+- express.js
 
 ## Setup
 
@@ -29,7 +30,6 @@ docker compose exec root pnpm install
 ```
 
 ### How to use
-
 ```
 # Linting
 docker compose exec root pnpm lint
@@ -39,4 +39,7 @@ docker compose exec root pnpm format
 
 # Run any command in frontend container
 docker compose exec frontend pnpm frontend <command>
+
+# Run any command in backend container
+docker compose exec backend pnpm backend <command>
 ```
