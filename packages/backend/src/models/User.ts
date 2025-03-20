@@ -1,13 +1,16 @@
 import { Table, Model, Column, HasMany } from "sequelize-typescript";
+import { DataTypes } from "sequelize";
 import { File } from "./File.js";
 import { Folder } from "./Folder.js";
 
 @Table({
   tableName: "users",
   timestamps: true,
+  paranoid: true,
 })
-export class User extends Model {
+export class User extends Model<User> {
   @Column({
+    type: DataTypes.STRING(50),
     allowNull: false,
     validate: {
       notEmpty: {
@@ -19,11 +22,16 @@ export class User extends Model {
       },
     },
   })
-  name!: string;
+  declare name: string;
 
   @HasMany(() => File)
-  files?: File[];
+  declare files?: File[];
 
   @HasMany(() => Folder)
-  folders?: Folder[];
+  declare folders?: Folder[];
+
+  // Timestamps
+  declare createdAt: Date;
+  declare updatedAt: Date;
+  declare deletedAt: Date | null;
 }

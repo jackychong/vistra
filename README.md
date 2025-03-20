@@ -30,6 +30,7 @@ docker compose exec root pnpm install
 ```
 
 ### How to use
+
 ```
 # Linting
 docker compose exec root pnpm lint
@@ -42,4 +43,21 @@ docker compose exec frontend pnpm frontend <command>
 
 # Run any command in backend container
 docker compose exec backend pnpm backend <command>
+```
+
+## Database
+
+Make sure you have MySQL 8 installed and running on your machine.
+
+```
+# Migration
+docker compose exec backend pnpm backend migrate
+docker compose exec backend pnpm backend migrate:down
+docker compose exec backend pnpm backend migrate:down-all
+
+# Seeding
+docker compose exec backend pnpm backend seed
+docker compose exec backend pnpm backend seed:down
+docker compose exec backend pnpm backend seed:down-all
+
 ```

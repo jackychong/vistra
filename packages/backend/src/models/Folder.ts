@@ -7,27 +7,29 @@ import {
   HasMany,
   Index,
 } from "sequelize-typescript";
-import { Op } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import { User } from "./User.js";
 import { File } from "./File.js";
 
 @Table({
   tableName: "folders",
   timestamps: true,
+  paranoid: true,
   indexes: [
     {
       unique: true,
       fields: ["name", "parentId"],
       name: "unique_folder_name_in_parent",
       where: {
-        deletedAt: null, // If using paranoid/soft deletes
+        deletedAt: null,
       },
     },
   ],
 })
 @Index("unique_folder_name_in_parent")
-export class Folder extends Model {
+export class Folder extends Model<Folder> {
   @Column({
+    type: DataTypes.STRING(255),
     allowNull: false,
     validate: {
       notEmpty: {
@@ -41,25 +43,12 @@ export class Folder extends Model {
         args: [["/", ".", ".."]],
         msg: "Invalid folder name",
       },
-      async uniqueNameInParent(this: Folder) {
-        const existingFolder = await Folder.findOne({
-          where: {
-            name: this.name,
-            parentId: this.parentId,
-            id: { [Op.ne]: this.id },
-          },
-        });
-        if (existingFolder) {
-          throw new Error(
-            "A folder with this name already exists in this location",
-          );
-        }
-      },
     },
   })
-  name!: string;
+  declare name: string;
 
   @Column({
+    type: DataTypes.STRING(1000),
     allowNull: true,
     validate: {
       len: {
@@ -68,48 +57,71 @@ export class Folder extends Model {
       },
     },
   })
-  description?: string;
+  declare description?: string;
 
   @ForeignKey(() => Folder)
   @Column({
+    type: DataTypes.INTEGER,
     allowNull: true,
-    validate: {
-      async isValidParent(this: Folder, value: number) {
-        if (value === this.id) {
-          throw new Error("Folder cannot be its own parent");
-        }
-        // Check for circular reference
-        if (value) {
-          let parent = await Folder.findByPk(value);
-          while (parent) {
-            if (parent.id === this.id) {
-              throw new Error("Circular folder reference detected");
-            }
-            parent = parent.parentId
-              ? await Folder.findByPk(parent.parentId)
-              : null;
-          }
-        }
-      },
-    },
   })
-  parentId?: number;
+  declare parentId?: number;
 
   @BelongsTo(() => Folder)
-  parent?: Folder;
+  declare parent?: Folder;
 
   @HasMany(() => Folder)
-  subfolders?: Folder[];
+  declare subfolders?: Folder[];
 
   @HasMany(() => File)
-  files?: File[];
+  declare files?: File[];
 
   @ForeignKey(() => User)
   @Column({
+    type: DataTypes.INTEGER,
     allowNull: false,
   })
-  createdById!: number;
+  declare createdById: number;
 
   @BelongsTo(() => User)
-  createdBy?: User;
+  declare createdBy?: User;
+
+  // Timestamps
+  declare createdAt: Date;
+  declare updatedAt: Date;
+  declare deletedAt: Date | null;
+
+  // Custom validation method
+  async uniqueNameInParent() {
+    const existingFolder = await Folder.findOne({
+      where: {
+        name: this.name,
+        parentId: this.parentId,
+        id: { [Op.ne]: this.id },
+      },
+    });
+    if (existingFolder) {
+      throw new Error(
+        "A folder with this name already exists in this location",
+      );
+    }
+  }
+
+  // Custom validation method
+  async isValidParent() {
+    if (this.parentId === this.id) {
+      throw new Error("Folder cannot be its own parent");
+    }
+    // Check for circular reference
+    if (this.parentId) {
+      let parent = await Folder.findByPk(this.parentId);
+      while (parent) {
+        if (parent.id === this.id) {
+          throw new Error("Circular folder reference detected");
+        }
+        parent = parent.parentId
+          ? await Folder.findByPk(parent.parentId)
+          : null;
+      }
+    }
+  }
 }

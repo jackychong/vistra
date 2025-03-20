@@ -41,6 +41,11 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 4001
       COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: vistra
+      DB_USER: root
+      DB_PASSWORD: password
     ports:
       - "4001:4001"
     volumes:
@@ -49,6 +54,17 @@ services:
       - backend_pnpm-store:/app/.pnpm-store
     command: pnpm backend dev -H 0.0.0.0
 
+  db:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=vistra
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./packages/backend/sql:/docker-entrypoint-initdb.d
+
 volumes:
   node_modules:
   pnpm-store:
@@ -56,3 +72,4 @@ volumes:
   frontend_pnpm-store:
   backend_node_modules:
   backend_pnpm-store:
+  mysql_data:

@@ -6,27 +6,29 @@ import {
   BelongsTo,
   Index,
 } from "sequelize-typescript";
-import { Op } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import { User } from "./User.js";
 import { Folder } from "./Folder.js";
 
 @Table({
   tableName: "files",
   timestamps: true,
+  paranoid: true,
   indexes: [
     {
       unique: true,
       fields: ["name", "folderId"],
       name: "unique_file_name_in_folder",
       where: {
-        deletedAt: null, // If using paranoid/soft deletes
+        deletedAt: null,
       },
     },
   ],
 })
 @Index("unique_file_name_in_folder")
-export class File extends Model {
+export class File extends Model<File> {
   @Column({
+    type: DataTypes.STRING(255),
     allowNull: false,
     validate: {
       notEmpty: {
@@ -36,25 +38,12 @@ export class File extends Model {
         args: [1, 255],
         msg: "File name must be between 1 and 255 characters",
       },
-      async uniqueNameInFolder(this: File) {
-        const existingFile = await File.findOne({
-          where: {
-            name: this.name,
-            folderId: this.folderId,
-            id: { [Op.ne]: this.id },
-          },
-        });
-        if (existingFile) {
-          throw new Error(
-            "A file with this name already exists in this folder",
-          );
-        }
-      },
     },
   })
-  name!: string;
+  declare name: string;
 
   @Column({
+    type: DataTypes.STRING(1000),
     allowNull: true,
     validate: {
       len: {
@@ -63,25 +52,21 @@ export class File extends Model {
       },
     },
   })
-  description?: string;
+  declare description?: string;
 
   @Column({
+    type: DataTypes.STRING(255),
     allowNull: false,
     validate: {
       notEmpty: {
         msg: "MIME type cannot be empty",
       },
-      isValidMimeType(value: string) {
-        const mimeTypePattern = /^[\w-]+\/[\w-]+$/;
-        if (!mimeTypePattern.test(value)) {
-          throw new Error("Invalid MIME type format");
-        }
-      },
     },
   })
-  mimeType!: string;
+  declare mimeType: string;
 
   @Column({
+    type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
       min: {
@@ -94,23 +79,44 @@ export class File extends Model {
       },
     },
   })
-  size!: number;
+  declare size: number;
 
   @ForeignKey(() => Folder)
   @Column({
+    type: DataTypes.INTEGER,
     allowNull: false,
   })
-  folderId!: number;
+  declare folderId: number;
 
   @BelongsTo(() => Folder)
-  folder?: Folder;
+  declare folder?: Folder;
 
   @ForeignKey(() => User)
   @Column({
+    type: DataTypes.INTEGER,
     allowNull: false,
   })
-  createdById!: number;
+  declare createdById: number;
 
   @BelongsTo(() => User)
-  createdBy?: User;
+  declare createdBy?: User;
+
+  // Timestamps
+  declare createdAt: Date;
+  declare updatedAt: Date;
+  declare deletedAt: Date | null;
+
+  // Custom validation method
+  async uniqueNameInFolder() {
+    const existingFile = await File.findOne({
+      where: {
+        name: this.name,
+        folderId: this.folderId,
+        id: { [Op.ne]: this.id },
+      },
+    });
+    if (existingFile) {
+      throw new Error("A file with this name already exists in this folder");
+    }
+  }
 }

@@ -9,7 +9,15 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "tsx src/migrations/cli.ts up",
+    "migrate:down": "tsx src/migrations/cli.ts down",
+    "migrate:down:all": "tsx src/migrations/cli.ts down-all",
+    "migrate:status": "tsx src/migrations/cli.ts status",
+    "seed": "tsx src/seeders/cli.ts seed",
+    "seed:down": "tsx src/seeders/cli.ts unseed",
+    "seed:down:all": "tsx src/seeders/cli.ts unseed:all",
+    "seed:status": "tsx src/seeders/cli.ts status"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -26,11 +34,13 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.17.24",
     "@types/sequelize": "^4.28.20",
+    "@types/umzug": "^2.3.9",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.56.0",
     "nodemon": "^3.1.0",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "umzug": "^3.8.2"
   }
 }
