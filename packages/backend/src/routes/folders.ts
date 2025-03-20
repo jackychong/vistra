@@ -11,10 +11,11 @@ interface FolderContentsRequest extends Request {
 const router = Router();
 
 /**
- * GET /api/folders/:id/contents
+ * GET /api/folders/:id?
  * Get all files and folders in a specific folder with pagination and sorting
+ * If no id is provided, returns root level items (items without parent)
  */
-router.get("/:id/contents", async (req: FolderContentsRequest, res: Response) => {
+router.get("/:id?", async (req: FolderContentsRequest, res: Response) => {
   try {
     const result = await FolderService.getFolderContents(req.params.id, req.query);
     res.json(result);

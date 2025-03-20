@@ -43,18 +43,6 @@ export class File extends Model<File> {
   declare name: string;
 
   @Column({
-    type: DataTypes.STRING(1000),
-    allowNull: true,
-    validate: {
-      len: {
-        args: [0, 1000],
-        msg: "Description cannot exceed 1000 characters",
-      },
-    },
-  })
-  declare description?: string;
-
-  @Column({
     type: DataTypes.STRING(255),
     allowNull: false,
     validate: {
@@ -84,9 +72,9 @@ export class File extends Model<File> {
   @ForeignKey(() => Folder)
   @Column({
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   })
-  declare folderId: number;
+  declare folderId: number | null;
 
   @BelongsTo(() => Folder)
   declare folder?: Folder;

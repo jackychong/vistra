@@ -47,18 +47,6 @@ export class Folder extends Model<Folder> {
   })
   declare name: string;
 
-  @Column({
-    type: DataTypes.STRING(1000),
-    allowNull: true,
-    validate: {
-      len: {
-        args: [0, 1000],
-        msg: "Description cannot exceed 1000 characters",
-      },
-    },
-  })
-  declare description?: string;
-
   @ForeignKey(() => Folder)
   @Column({
     type: DataTypes.INTEGER,

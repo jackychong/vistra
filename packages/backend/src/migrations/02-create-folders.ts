@@ -12,10 +12,6 @@ export const up: Migration = async ({ context: queryInterface }) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    description: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-    },
     parentId: {
       type: DataTypes.INTEGER,
       allowNull: true,

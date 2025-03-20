@@ -12,10 +12,6 @@ export const up: Migration = async ({ context: queryInterface }) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    description: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-    },
     mimeType: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -30,7 +26,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     folderId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "folders",
         key: "id",
