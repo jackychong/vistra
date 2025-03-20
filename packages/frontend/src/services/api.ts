@@ -1,0 +1,111 @@
+/**
+ * API service for interacting with the backend
+ */
+
+// Base URL for API requests
+const API_BASE_URL = "http://localhost:4001/api";
+
+// Types
+export interface ApiResponse<T> {
+  data: T;
+  error?: string;
+}
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sortField?: string;
+  sortOrder?: "ASC" | "DESC";
+  search?: string;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface User {
+  id: number;
+  name: string;
+}
+
+export interface Item {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  parentId: number | null;
+  folderId: number | null;
+  mimeType: string | null;
+  size: number | null;
+  itemType: "folder" | "file";
+  user: User;
+}
+
+export interface FolderContentsResponse {
+  items: Item[];
+  pagination: Pagination;
+}
+
+/**
+ * Fetch folder contents from the API
+ * @param folderId - Optional folder ID. If not provided, returns root level items
+ * @param params - Pagination, sorting, and search parameters
+ */
+export const getFolderContents = async (
+  folderId?: string | number,
+  params: PaginationParams = {}
+): Promise<ApiResponse<FolderContentsResponse>> => {
+  try {
+    // Build query string from params
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.limit) queryParams.append("limit", params.limit.toString());
+    if (params.sortField) queryParams.append("sortField", params.sortField);
+    if (params.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+    if (params.search) queryParams.append("search", params.search);
+
+    // Build URL
+    const url = `${API_BASE_URL}/folders${folderId ? `/${folderId}` : ""}?${queryParams.toString()}`;
+
+    // Fetch data
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return { data: {} as FolderContentsResponse, error: errorData.error || "Failed to fetch folder contents" };
+    }
+
+    const data = await response.json();
+    return { data };
+  } catch (error) {
+    console.error("Error fetching folder contents:", error);
+    return { 
+      data: {} as FolderContentsResponse, 
+      error: error instanceof Error ? error.message : "An unknown error occurred" 
+    };
+  }
+};
+
+/**
+ * Format file size for display
+ * @param bytes - File size in bytes
+ */
+export const formatFileSize = (bytes: number | null): string => {
+  if (bytes === null) return "-";
+  
+  if (bytes === 0) return "0 Bytes";
+  
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
