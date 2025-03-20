@@ -40,5 +40,3 @@ docker compose exec root pnpm format
 # Run any command in frontend container
 docker compose exec frontend pnpm frontend <command>
 ```
-
-
