@@ -1,15 +1,100 @@
-"use client";
+     "use client";
 
-import { Box, CircularProgress, IconButton, Paper, Stack } from "@mui/material";
+import { DocumentTableProps } from "../types";
+import { formatFileSize, Item } from "@/services/api";
+import { Box, CircularProgress, IconButton, Paper, Stack, Typography, Select, MenuItem, Pagination } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   MoreVert as MoreVertIcon,
   Folder as FolderIcon,
   InsertDriveFile as FileIcon,
 } from "@mui/icons-material";
-import { DocumentTableProps } from "../types";
-import { formatFileSize, Item } from "@/services/api";
 
+const StyledFooter = styled(Box)({
+  padding: "8px 16px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  borderTop: "1px solid rgba(224, 224, 224, 1)"
+});
+
+const StyledRowsPerPage = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  gap: "8px"
+});
+
+const StyledSelect = styled(Select)({
+  minWidth: "70px",
+  height: "32px",
+  ".MuiOutlinedInput-notchedOutline": {
+    border: "1px solid rgba(0, 0, 0, 0.23)"
+  },
+  "&.MuiInputBase-root": {
+    borderRadius: "4px"
+  }
+});
+
+const StyledPaginationItem = styled(Pagination)({
+  "& .MuiPaginationItem-root": {
+    margin: "0 4px"
+  }
+});
+
+interface CustomFooterProps {
+  pagination: {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  onPaginationChange: (model: { page: number; pageSize: number }) => void;
+}
+
+const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => {
+  const handlePageSizeChange = (event: any) => {
+    onPaginationChange({
+      page: 0,
+      pageSize: Number(event.target.value)
+    });
+  };
+
+  const handlePageChange = (_: any, newPage: number) => {
+    onPaginationChange({
+      page: newPage - 1,
+      pageSize: pagination.limit
+    });
+  };
+
+  return (
+    <StyledFooter>
+      <StyledRowsPerPage>
+        <Typography>Show</Typography>
+        <StyledSelect
+          size="small"
+          value={pagination.limit}
+          onChange={handlePageSizeChange}
+        >
+          {[10, 20, 50].map((size) => (
+            <MenuItem key={size} value={size}>
+              {size}
+            </MenuItem>
+          ))}
+        </StyledSelect>
+        <Typography>rows per page</Typography>
+      </StyledRowsPerPage>
+      <StyledPaginationItem
+        page={pagination.page}
+        count={pagination.totalPages}
+        onChange={handlePageChange}
+        shape="rounded"
+        boundaryCount={2}
+        siblingCount={1}
+      />
+    </StyledFooter>
+  );
+};
 export const DocumentTable = ({
   items,
   loading,
@@ -49,16 +134,17 @@ export const DocumentTable = ({
       valueGetter: (params: any) => params.row?.user.name,
     },
     {
-      field: "createdAt",
+      field: "updatedAt",
       headerName: "Date",
       width: 150,
-      valueFormatter: (params: any) => {
-        return new Date(params.value).toLocaleDateString("en-US", {
+      renderCell: (params: any) => {
+        return new Date(params.value).toLocaleDateString("en-UK", {
           day: "2-digit",
           month: "short",
           year: "numeric",
         });
       },
+      
     },
     {
       field: "size",
@@ -128,6 +214,15 @@ export const DocumentTable = ({
           loading={loading}
           getRowClassName={(params: any) => {
             return params.row.itemType === "folder" ? "folder-row" : "";
+          }}
+          slots={{
+            footer: CustomFooter
+          }}
+          slotProps={{
+            footer: {
+              pagination,
+              onPaginationChange
+            }
           }}
           sx={{
             border: "none",

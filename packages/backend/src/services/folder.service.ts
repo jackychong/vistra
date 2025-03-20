@@ -18,7 +18,7 @@ interface QueryResultItem {
   folderId: number | null;
   mimeType: string | null;
   size: number | null;
-  item_type: "folder" | "file";
+  itemType: "folder" | "file";
   userName: string;
   createdById: number;
   total_count: number;
@@ -174,7 +174,7 @@ export class FolderService {
         folderId: item.folderId,
         mimeType: item.mimeType,
         size: item.size,
-        itemType: item.item_type,
+        itemType: item.itemType,
         user: {
           id: item.createdById,
           name: item.userName,
