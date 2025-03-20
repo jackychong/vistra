@@ -65,7 +65,9 @@ export const DocumentTable = ({
       headerName: "File size",
       width: 120,
       valueFormatter: (params: any) => {
-        return params?.row?.itemType === "file" ? formatFileSize(params.value) : "-";
+        return params?.row?.itemType === "file"
+          ? formatFileSize(params.value)
+          : "-";
       },
     },
     {

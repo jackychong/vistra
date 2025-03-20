@@ -56,7 +56,7 @@ export interface FolderContentsResponse {
  */
 export const getFolderContents = async (
   folderId?: string | number,
-  params: PaginationParams = {}
+  params: PaginationParams = {},
 ): Promise<ApiResponse<FolderContentsResponse>> => {
   try {
     // Build query string from params
@@ -80,16 +80,20 @@ export const getFolderContents = async (
 
     if (!response.ok) {
       const errorData = await response.json();
-      return { data: {} as FolderContentsResponse, error: errorData.error || "Failed to fetch folder contents" };
+      return {
+        data: {} as FolderContentsResponse,
+        error: errorData.error || "Failed to fetch folder contents",
+      };
     }
 
     const data = await response.json();
     return { data };
   } catch (error) {
     console.error("Error fetching folder contents:", error);
-    return { 
-      data: {} as FolderContentsResponse, 
-      error: error instanceof Error ? error.message : "An unknown error occurred" 
+    return {
+      data: {} as FolderContentsResponse,
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 };
@@ -100,12 +104,12 @@ export const getFolderContents = async (
  */
 export const formatFileSize = (bytes: number | null): string => {
   if (bytes === null) return "-";
-  
+
   if (bytes === 0) return "0 Bytes";
-  
+
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 };

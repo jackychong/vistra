@@ -33,7 +33,7 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   });
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(
-    folderId
+    folderId,
   );
 
   // Fetch data
@@ -51,17 +51,19 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
 
     try {
       const response = await getFolderContents(currentFolderId, params);
-      
+
       if (response.error) {
         setError(response.error);
       } else {
         setItems(response.data.items || []);
-        setPagination(response.data.pagination || {
-          page: 1,
-          limit: 10,
-          totalItems: 0,
-          totalPages: 0,
-        });
+        setPagination(
+          response.data.pagination || {
+            page: 1,
+            limit: 10,
+            totalItems: 0,
+            totalPages: 0,
+          },
+        );
       }
     } catch (err) {
       setError("Failed to fetch data. Please try again.");
@@ -103,7 +105,10 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     setPagination((prev: PaginationState) => ({ ...prev, page: 1 }));
   };
 
-  const handlePaginationChange = (model: { page: number; pageSize: number }) => {
+  const handlePaginationChange = (model: {
+    page: number;
+    pageSize: number;
+  }) => {
     setPagination((prev: PaginationState) => ({
       ...prev,
       page: model.page + 1, // DataGrid uses 0-based indexing
@@ -140,7 +145,7 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   return (
     <Box sx={{ p: 3 }}>
       <ErrorSnackbar error={error} onClose={() => setError(null)} />
-      
+
       <PageHeader
         currentFolderId={currentFolderId}
         onBackToRoot={handleBackToRoot}
@@ -150,9 +155,9 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
           onAddFolder={handleAddFolder}
         />
       </PageHeader>
-      
+
       <SearchBar value={searchTerm} onChange={handleSearch} />
-      
+
       <DocumentTable
         items={items}
         loading={loading}

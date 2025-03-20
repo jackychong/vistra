@@ -4,7 +4,10 @@ import { Button, Stack } from "@mui/material";
 import { Upload as UploadIcon, Add as AddIcon } from "@mui/icons-material";
 import { ActionButtonsProps } from "../types";
 
-export const ActionButtons = ({ onUploadFiles, onAddFolder }: ActionButtonsProps) => {
+export const ActionButtons = ({
+  onUploadFiles,
+  onAddFolder,
+}: ActionButtonsProps) => {
   return (
     <Stack direction="row" spacing={2}>
       <Button

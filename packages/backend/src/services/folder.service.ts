@@ -72,6 +72,37 @@ export class FolderService {
     const searchCondition = search ? "AND LOWER(name) LIKE LOWER(:search)" : "";
     const parentCondition = parentId === undefined ? "IS NULL" : "= :parentId";
 
+    // First, get the total count
+    const countQuery = `
+      WITH combinedResults AS (
+        SELECT COUNT(*) as count
+        FROM folders f
+        WHERE parentId ${parentCondition}
+        AND f.deletedAt IS NULL
+        ${searchCondition}
+        
+        UNION ALL
+        
+        SELECT COUNT(*) as count
+        FROM files f
+        WHERE folderId ${parentCondition}
+        AND f.deletedAt IS NULL
+        ${searchCondition}
+      )
+      SELECT SUM(count) as total_count FROM combinedResults
+    `;
+
+    const [countResult] = await sequelize.query(countQuery, {
+      replacements: {
+        parentId: parentId,
+        search: search ? `%${search}%` : undefined
+      },
+      type: QueryTypes.SELECT
+    });
+
+    const totalCount = Number((countResult as any).total_count) || 0;
+
+    // Then get the paginated results
     const query = `
       WITH combinedResults AS (
         SELECT 
@@ -112,9 +143,7 @@ export class FolderService {
         AND f.deletedAt IS NULL
         ${searchCondition}
       )
-      SELECT 
-        *,
-        COUNT(*) OVER() as totalCount
+      SELECT *
       FROM combinedResults
       ORDER BY
         CASE WHEN itemType = 'folder' THEN 0 ELSE 1 END,
@@ -133,7 +162,6 @@ export class FolderService {
       type: QueryTypes.SELECT
     });
 
-    const totalCount = results.length > 0 ? Number(results[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / Number(limit));
 
     const items = results.map((item: QueryResultItem): FormattedItem => ({

@@ -3,7 +3,11 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { PageHeaderProps } from "../types";
 
-export const PageHeader = ({ currentFolderId, onBackToRoot, children }: PageHeaderProps) => {
+export const PageHeader = ({
+  currentFolderId,
+  onBackToRoot,
+  children,
+}: PageHeaderProps) => {
   return (
     <Stack
       direction="row"
