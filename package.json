@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "frontend": "pnpm --filter frontend"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,9 @@
     "node": "20.19.0"
   },
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@eslint/js": "^9.22.0",
     "eslint": "^9.22.0",
