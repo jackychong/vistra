@@ -1,0 +1,49 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# next.js
+.next
+out
+
+# production
+build
+dist
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local env files
+.env
+.env*.local
+
+# ide
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# testing
+coverage
+
+# misc
+.ds_store
+*.pem
+
+# docker volumes
+mysql_data
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# development
+.dev/*

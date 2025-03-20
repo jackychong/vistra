@@ -1,0 +1,43 @@
+ARG DISTRO_NAME=bullseye
+
+FROM debian:$DISTRO_NAME-slim as base
+
+# 1. Install dependencies only when needed
+#FROM base AS deps
+
+# Common dependencies
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  --mount=type=tmpfs,target=/var/log \
+  rm -f /etc/apt/apt.conf.d/docker-clean; \
+  echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache; \
+  apt-get update -qq \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    build-essential \
+    gnupg2 \
+    curl \
+    less \
+    git \
+    vim
+
+# Install NodeJS and Yarn
+ARG NODE_MAJOR=20
+# Install nodejs using nodesource setup script, in case when debian nodesource is not
+# using the latest nodejs version
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    --mount=type=tmpfs,target=/var/log \
+    apt-get update && \
+    apt-get install -y curl software-properties-common && \
+    curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - && \ 
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends nodejs
+
+RUN corepack enable pnpm
+
+
+# 2. Rebuild the source code only when needed
+#FROM base AS builder
+WORKDIR /app
+
+ENTRYPOINT ["/bin/bash"]
