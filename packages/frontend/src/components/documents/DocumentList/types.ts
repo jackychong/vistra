@@ -16,7 +16,9 @@ export interface SortingState {
 // Component Props
 export interface PageHeaderProps {
   currentFolderId?: string;
+  folderPath: Item[];
   onBackToRoot: () => void;
+  onFolderClick: (folderId: number) => void;
   children?: React.ReactNode;
 }
 

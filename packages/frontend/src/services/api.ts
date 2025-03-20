@@ -102,6 +102,41 @@ export const getFolderContents = async (
  * Format file size for display
  * @param bytes - File size in bytes
  */
+/**
+ * Get the path to a folder (including the folder itself)
+ * @param folderId - Folder ID to get path for
+ */
+export const getFolderPath = async (
+  folderId: string | number
+): Promise<ApiResponse<Item[]>> => {
+  try {
+    const url = `${API_BASE_URL}/folders/${folderId}/path`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        data: [],
+        error: errorData.error || "Failed to fetch folder path",
+      };
+    }
+
+    const data = await response.json();
+    return { data };
+  } catch (error) {
+    console.error("Error fetching folder path:", error);
+    return {
+      data: [],
+      error: error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+};
+
 export const formatFileSize = (bytes: number | null): string => {
   if (bytes === null) return "-";
 

@@ -24,7 +24,7 @@ interface QueryResultItem {
   total_count: number;
 }
 
-export interface FormattedItem {
+export interface Item {
   id: number;
   name: string;
   createdAt: string;
@@ -41,7 +41,7 @@ export interface FormattedItem {
 }
 
 export interface PaginatedResponse {
-  items: FormattedItem[];
+  items: Item[];
   pagination: {
     page: number;
     limit: number;
@@ -51,6 +51,70 @@ export interface PaginatedResponse {
 }
 
 export class FolderService {
+  /**
+   * Get the path to a folder (including the folder itself)
+   * @param folderId - The folder ID to get path for
+   */
+  static async getFolderPath(folderId: string): Promise<Item[]> {
+    const query = `
+      WITH RECURSIVE folder_path AS (
+        -- Base case: start with the target folder
+        SELECT 
+          f.id,
+          f.name,
+          f.parentId,
+          f.createdAt,
+          f.updatedAt,
+          f.createdById,
+          u.name as userName,
+          1 as level
+        FROM folders f
+        LEFT JOIN users u ON f.createdById = u.id
+        WHERE f.id = :folderId AND f.deletedAt IS NULL
+
+        UNION ALL
+
+        -- Recursive case: get parent folders
+        SELECT 
+          f.id,
+          f.name,
+          f.parentId,
+          f.createdAt,
+          f.updatedAt,
+          f.createdById,
+          u.name as userName,
+          fp.level + 1
+        FROM folders f
+        LEFT JOIN users u ON f.createdById = u.id
+        INNER JOIN folder_path fp ON f.id = fp.parentId
+        WHERE f.deletedAt IS NULL
+      )
+      SELECT * FROM folder_path
+      ORDER BY level DESC
+    `;
+
+    const results = await sequelize.query<QueryResultItem>(query, {
+      replacements: { folderId },
+      type: QueryTypes.SELECT,
+    });
+
+    return results.map((item): Item => ({
+      id: item.id,
+      name: item.name,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      parentId: item.parentId,
+      folderId: null,
+      mimeType: null,
+      size: null,
+      itemType: "folder",
+      user: {
+        id: item.createdById,
+        name: item.userName,
+      },
+    }));
+  }
+
   /**
    * Get files and folders within a specific folder or at root level
    * @param parentId - The folder ID to get contents from. If undefined, returns root level items
@@ -165,7 +229,7 @@ export class FolderService {
     const totalPages = Math.ceil(totalCount / Number(limit));
 
     const items = results.map(
-      (item: QueryResultItem): FormattedItem => ({
+      (item: QueryResultItem): Item => ({
         id: item.id,
         name: item.name,
         createdAt: item.createdAt,

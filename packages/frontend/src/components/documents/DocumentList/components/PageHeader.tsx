@@ -1,11 +1,13 @@
 "use client";
 
-import { Button, Stack, Typography } from "@mui/material";
+import { Breadcrumbs, Button, Link, Stack, Typography } from "@mui/material";
 import { PageHeaderProps } from "../types";
 
 export const PageHeader = ({
   currentFolderId,
+  folderPath,
   onBackToRoot,
+  onFolderClick,
   children,
 }: PageHeaderProps) => {
   return (
@@ -15,19 +17,35 @@ export const PageHeader = ({
       alignItems="center"
       mb={3}
     >
-      <Stack direction="row" alignItems="center">
+      <Stack direction="column" spacing={1}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: "normal" }}>
           Documents
         </Typography>
-        {currentFolderId && (
-          <Button
-            variant="text"
+        <Breadcrumbs aria-label="folder navigation">
+          <Link
+            component="button"
+            variant="body1"
             onClick={onBackToRoot}
-            sx={{ ml: 2, textTransform: "none" }}
+            underline="hover"
+            color="inherit"
+            sx={{ cursor: "pointer" }}
           >
-            (Back to Root)
-          </Button>
-        )}
+            Root
+          </Link>
+          {folderPath.map((folder, index) => (
+            <Link
+              key={folder.id}
+              component="button"
+              variant="body1"
+              onClick={() => onFolderClick(folder.id)}
+              underline="hover"
+              color={index === folderPath.length - 1 ? "text.primary" : "inherit"}
+              sx={{ cursor: "pointer" }}
+            >
+              {folder.name}
+            </Link>
+          ))}
+        </Breadcrumbs>
       </Stack>
       {children}
     </Stack>

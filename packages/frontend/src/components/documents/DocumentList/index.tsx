@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box } from "@mui/material";
 import { GridSortModel } from "@mui/x-data-grid";
-import { getFolderContents, Item, PaginationParams } from "@/services/api";
+import { getFolderContents, getFolderPath, Item, PaginationParams } from "@/services/api";
 import { PageHeader } from "./components/PageHeader";
 import { ActionButtons } from "./components/ActionButtons";
 import { SearchBar } from "./components/SearchBar";
@@ -32,9 +32,25 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     order: "ASC",
   });
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(
-    folderId,
-  );
+  const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderId);
+  const [folderPath, setFolderPath] = useState<Item[]>([]);
+
+  // Fetch folder path when current folder changes
+  useEffect(() => {
+    const fetchFolderPath = async () => {
+      if (!currentFolderId) {
+        setFolderPath([]);
+        return;
+      }
+
+      const response = await getFolderPath(currentFolderId);
+      if (!response.error) {
+        setFolderPath(response.data);
+      }
+    };
+
+    fetchFolderPath();
+  }, [currentFolderId]);
 
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -86,6 +102,13 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   // Event handlers
   const handleBackToRoot = () => {
     setCurrentFolderId(undefined);
+    setFolderPath([]);
+    setPagination((prev: PaginationState) => ({ ...prev, page: 1 }));
+    setSelectedItems([]);
+  };
+
+  const handleFolderClick = (folderId: number) => {
+    setCurrentFolderId(folderId.toString());
     setPagination((prev: PaginationState) => ({ ...prev, page: 1 }));
     setSelectedItems([]);
   };
@@ -148,7 +171,9 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
 
       <PageHeader
         currentFolderId={currentFolderId}
+        folderPath={folderPath}
         onBackToRoot={handleBackToRoot}
+        onFolderClick={handleFolderClick}
       >
         <ActionButtons
           onUploadFiles={handleUploadFiles}
