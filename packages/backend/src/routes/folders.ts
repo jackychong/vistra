@@ -17,7 +17,10 @@ const router = Router();
  */
 router.get("/:id?", async (req: FolderContentsRequest, res: Response) => {
   try {
-    const result = await FolderService.getFolderContents(req.params.id, req.query);
+    const result = await FolderService.getFolderContents(
+      req.params.id,
+      req.query,
+    );
     res.json(result);
   } catch (error) {
     console.error("Error fetching folder contents:", error);

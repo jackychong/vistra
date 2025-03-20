@@ -13,22 +13,54 @@ export const up: Seeder = async ({ context: sequelize }) => {
   }
 
   // Get all needed folders
-  const presentations = await Folder.findOne({ where: { name: "Presentations", createdById: demoUser.id } });
-  const contracts = await Folder.findOne({ where: { name: "Contracts", createdById: demoUser.id } });
-  const invoices = await Folder.findOne({ where: { name: "Invoices", createdById: demoUser.id } });
-  const courses = await Folder.findOne({ where: { name: "Courses", createdById: demoUser.id } });
-  const travel2024 = await Folder.findOne({ where: { name: "2024", createdById: demoUser.id } });
-  const frontend = await Folder.findOne({ where: { name: "Frontend", createdById: demoUser.id } });
-  const backend = await Folder.findOne({ where: { name: "Backend", createdById: demoUser.id } });
-  const uiDesign = await Folder.findOne({ where: { name: "UI Design", createdById: demoUser.id } });
-  const logos = await Folder.findOne({ where: { name: "Logos", createdById: demoUser.id } });
-  const reports = await Folder.findOne({ where: { name: "Reports", createdById: demoUser.id } });
-  const receipts = await Folder.findOne({ where: { name: "Receipts", createdById: demoUser.id } });
-  const certificates = await Folder.findOne({ where: { name: "Certificates", createdById: demoUser.id } });
-  const weddings = await Folder.findOne({ where: { name: "Weddings", createdById: demoUser.id } });
-  const birthdays = await Folder.findOne({ where: { name: "Birthdays", createdById: demoUser.id } });
-  const health = await Folder.findOne({ where: { name: "Health", createdById: demoUser.id } });
-  const journal = await Folder.findOne({ where: { name: "Journal", createdById: demoUser.id } });
+  const presentations = await Folder.findOne({
+    where: { name: "Presentations", createdById: demoUser.id },
+  });
+  const contracts = await Folder.findOne({
+    where: { name: "Contracts", createdById: demoUser.id },
+  });
+  const invoices = await Folder.findOne({
+    where: { name: "Invoices", createdById: demoUser.id },
+  });
+  const courses = await Folder.findOne({
+    where: { name: "Courses", createdById: demoUser.id },
+  });
+  const travel2024 = await Folder.findOne({
+    where: { name: "2024", createdById: demoUser.id },
+  });
+  const frontend = await Folder.findOne({
+    where: { name: "Frontend", createdById: demoUser.id },
+  });
+  const backend = await Folder.findOne({
+    where: { name: "Backend", createdById: demoUser.id },
+  });
+  const uiDesign = await Folder.findOne({
+    where: { name: "UI Design", createdById: demoUser.id },
+  });
+  const logos = await Folder.findOne({
+    where: { name: "Logos", createdById: demoUser.id },
+  });
+  const reports = await Folder.findOne({
+    where: { name: "Reports", createdById: demoUser.id },
+  });
+  const receipts = await Folder.findOne({
+    where: { name: "Receipts", createdById: demoUser.id },
+  });
+  const certificates = await Folder.findOne({
+    where: { name: "Certificates", createdById: demoUser.id },
+  });
+  const weddings = await Folder.findOne({
+    where: { name: "Weddings", createdById: demoUser.id },
+  });
+  const birthdays = await Folder.findOne({
+    where: { name: "Birthdays", createdById: demoUser.id },
+  });
+  const health = await Folder.findOne({
+    where: { name: "Health", createdById: demoUser.id },
+  });
+  const journal = await Folder.findOne({
+    where: { name: "Journal", createdById: demoUser.id },
+  });
 
   // Presentations folder - PowerPoint and Keynote files
   if (presentations) {
@@ -62,7 +94,8 @@ export const up: Seeder = async ({ context: sequelize }) => {
     });
     await File.create({
       name: "NDA Template.docx",
-      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       size: 350000,
       folderId: contracts.id,
       createdById: demoUser.id,
@@ -87,7 +120,8 @@ export const up: Seeder = async ({ context: sequelize }) => {
     });
     await File.create({
       name: "Q1_2024_Summary.xlsx",
-      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       size: 450000,
       folderId: invoices.id,
       createdById: demoUser.id,
@@ -318,14 +352,16 @@ export const up: Seeder = async ({ context: sequelize }) => {
     });
     await File.create({
       name: "Q4 Analysis.xlsx",
-      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       size: 2500000,
       folderId: reports.id,
       createdById: demoUser.id,
     });
     await File.create({
       name: "Market Research.docx",
-      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       size: 1800000,
       folderId: reports.id,
       createdById: demoUser.id,
@@ -350,7 +386,8 @@ export const up: Seeder = async ({ context: sequelize }) => {
     });
     await File.create({
       name: "Travel Expenses.xlsx",
-      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       size: 450000,
       folderId: receipts.id,
       createdById: demoUser.id,
@@ -432,7 +469,8 @@ export const up: Seeder = async ({ context: sequelize }) => {
     });
     await File.create({
       name: "Gift List.xlsx",
-      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       size: 250000,
       folderId: birthdays.id,
       createdById: demoUser.id,
@@ -475,21 +513,24 @@ export const up: Seeder = async ({ context: sequelize }) => {
   if (journal) {
     await File.create({
       name: "January 2024.docx",
-      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       size: 580000,
       folderId: journal.id,
       createdById: demoUser.id,
     });
     await File.create({
       name: "February 2024.docx",
-      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       size: 620000,
       folderId: journal.id,
       createdById: demoUser.id,
     });
     await File.create({
       name: "March 2024.docx",
-      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       size: 550000,
       folderId: journal.id,
       createdById: demoUser.id,
@@ -498,24 +539,26 @@ export const up: Seeder = async ({ context: sequelize }) => {
 
   // Root level files (no parent folder)
   console.log("Creating root level files...");
-  
+
   // Document files
   await File.create({
     name: "Project Proposal.docx",
-    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     size: 450000,
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Meeting Minutes.docx",
-    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     size: 380000,
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Business Plan.pdf",
     mimeType: "application/pdf",
@@ -523,7 +566,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Company Overview.pdf",
     mimeType: "application/pdf",
@@ -531,49 +574,54 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   // Spreadsheet files
   await File.create({
     name: "Budget 2024.xlsx",
-    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     size: 550000,
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Sales Forecast.xlsx",
-    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     size: 620000,
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Employee Schedule.xlsx",
-    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     size: 480000,
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   // Presentation files
   await File.create({
     name: "Company Presentation.pptx",
-    mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     size: 3500000,
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Product Launch.pptx",
-    mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     size: 4200000,
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   // Image files
   await File.create({
     name: "Team Photo.jpg",
@@ -582,7 +630,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Office Building.jpg",
     mimeType: "image/jpeg",
@@ -590,7 +638,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Product Mockup.png",
     mimeType: "image/png",
@@ -598,7 +646,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   // PDF files
   await File.create({
     name: "User Manual.pdf",
@@ -607,7 +655,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Legal Agreement.pdf",
     mimeType: "application/pdf",
@@ -615,7 +663,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "Technical Specification.pdf",
     mimeType: "application/pdf",
@@ -623,7 +671,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   // Code files
   await File.create({
     name: "main.js",
@@ -632,7 +680,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "styles.css",
     mimeType: "text/css",
@@ -640,7 +688,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "index.html",
     mimeType: "text/html",
@@ -648,7 +696,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "config.json",
     mimeType: "application/json",
@@ -656,7 +704,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
     folderId: null,
     createdById: demoUser.id,
   });
-  
+
   await File.create({
     name: "README.md",
     mimeType: "text/markdown",

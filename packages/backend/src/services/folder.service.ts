@@ -58,14 +58,14 @@ export class FolderService {
    */
   static async getFolderContents(
     parentId: string | undefined,
-    queryParams: QueryParams
+    queryParams: QueryParams,
   ): Promise<PaginatedResponse> {
     const {
       search,
       page = "1",
       limit = "10",
       sortField = "name",
-      sortOrder = "ASC"
+      sortOrder = "ASC",
     } = queryParams;
 
     const offset = (Number(page) - 1) * Number(limit);
@@ -95,9 +95,9 @@ export class FolderService {
     const [countResult] = await sequelize.query(countQuery, {
       replacements: {
         parentId: parentId,
-        search: search ? `%${search}%` : undefined
+        search: search ? `%${search}%` : undefined,
       },
-      type: QueryTypes.SELECT
+      type: QueryTypes.SELECT,
     });
 
     const totalCount = Number((countResult as any).total_count) || 0;
@@ -157,28 +157,30 @@ export class FolderService {
         parentId: parentId,
         search: search ? `%${search}%` : undefined,
         limit: Number(limit),
-        offset: offset
+        offset: offset,
       },
-      type: QueryTypes.SELECT
+      type: QueryTypes.SELECT,
     });
 
     const totalPages = Math.ceil(totalCount / Number(limit));
 
-    const items = results.map((item: QueryResultItem): FormattedItem => ({
-      id: item.id,
-      name: item.name,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      parentId: item.parentId,
-      folderId: item.folderId,
-      mimeType: item.mimeType,
-      size: item.size,
-      itemType: item.item_type,
-      user: {
-        id: item.createdById,
-        name: item.userName
-      }
-    }));
+    const items = results.map(
+      (item: QueryResultItem): FormattedItem => ({
+        id: item.id,
+        name: item.name,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        parentId: item.parentId,
+        folderId: item.folderId,
+        mimeType: item.mimeType,
+        size: item.size,
+        itemType: item.item_type,
+        user: {
+          id: item.createdById,
+          name: item.userName,
+        },
+      }),
+    );
 
     return {
       items,
@@ -186,8 +188,8 @@ export class FolderService {
         page: Number(page),
         limit: Number(limit),
         totalItems: totalCount,
-        totalPages
-      }
+        totalPages,
+      },
     };
   }
 }
