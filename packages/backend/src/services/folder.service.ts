@@ -50,7 +50,58 @@ export interface PaginatedResponse {
   };
 }
 
+import { Folder } from "../models/Folder.js";
+import { User } from "../models/User.js";
+
 export class FolderService {
+  /**
+   * Create a new folder
+   * @param name - The name of the folder
+   * @param parentId - Optional parent folder ID
+   * @param userId - ID of the user creating the folder
+   */
+  static async createFolder(
+    name: string,
+    userId: number,
+    parentId?: number
+  ): Promise<Item> {
+    const folder = await Folder.create({
+      name,
+      parentId,
+      createdById: userId,
+    });
+
+    const folderWithUser = await Folder.findByPk(folder.id, {
+      include: [
+        {
+          model: User,
+          as: "createdBy",
+          attributes: ["id", "name"],
+        },
+      ],
+    });
+
+    if (!folderWithUser) {
+      throw new Error("Failed to create folder");
+    }
+
+    return {
+      id: folderWithUser.id,
+      name: folderWithUser.name,
+      createdAt: folderWithUser.createdAt.toISOString(),
+      updatedAt: folderWithUser.updatedAt.toISOString(),
+      parentId: folderWithUser.parentId || null,
+      folderId: null,
+      mimeType: null,
+      size: null,
+      itemType: "folder",
+      user: {
+        id: folderWithUser.createdBy!.id,
+        name: folderWithUser.createdBy!.name,
+      },
+    };
+  }
+
   /**
    * Get the path to a folder (including the folder itself)
    * @param folderId - The folder ID to get path for

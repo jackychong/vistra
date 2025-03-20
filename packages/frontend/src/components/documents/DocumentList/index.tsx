@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Box } from "@mui/material";
+import { CreateFolderDialog } from "./components/CreateFolderDialog";
 import { GridSortModel } from "@mui/x-data-grid";
 import { getFolderContents, getFolderPath, Item, PaginationParams } from "@/services/api";
 import { PageHeader } from "./components/PageHeader";
@@ -118,9 +119,14 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     console.log("Upload files clicked");
   };
 
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
   const handleAddFolder = () => {
-    // TODO: Implement folder creation
-    console.log("Add folder clicked");
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleCreateSuccess = () => {
+    fetchData();
   };
 
   const handleSearch = (value: string) => {
@@ -182,6 +188,13 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
       </PageHeader>
 
       <SearchBar value={searchTerm} onChange={handleSearch} />
+
+      <CreateFolderDialog
+        open={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSuccess={handleCreateSuccess}
+        parentId={currentFolderId ? parseInt(currentFolderId) : undefined}
+      />
 
       <DocumentTable
         items={items}

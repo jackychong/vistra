@@ -137,6 +137,43 @@ export const getFolderPath = async (
   }
 };
 
+/**
+ * Create a new folder
+ * @param name - Folder name
+ * @param parentId - Optional parent folder ID
+ */
+export const createFolder = async (
+  name: string,
+  parentId?: number
+): Promise<ApiResponse<Item>> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/folders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, parentId }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        data: {} as Item,
+        error: errorData.error || "Failed to create folder",
+      };
+    }
+
+    const data = await response.json();
+    return { data };
+  } catch (error) {
+    console.error("Error creating folder:", error);
+    return {
+      data: {} as Item,
+      error: error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+};
+
 export const formatFileSize = (bytes: number | null): string => {
   if (bytes === null) return "-";
 
