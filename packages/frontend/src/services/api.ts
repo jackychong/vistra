@@ -107,7 +107,7 @@ export const getFolderContents = async (
  * @param folderId - Folder ID to get path for
  */
 export const getFolderPath = async (
-  folderId: string | number
+  folderId: string | number,
 ): Promise<ApiResponse<Item[]>> => {
   try {
     const url = `${API_BASE_URL}/folders/${folderId}/path`;
@@ -132,7 +132,8 @@ export const getFolderPath = async (
     console.error("Error fetching folder path:", error);
     return {
       data: [],
-      error: error instanceof Error ? error.message : "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 };
@@ -144,7 +145,7 @@ export const getFolderPath = async (
  */
 export const createFolder = async (
   name: string,
-  folderId?: number
+  folderId?: number,
 ): Promise<ApiResponse<Item>> => {
   try {
     const response = await fetch(`${API_BASE_URL}/folders`, {
@@ -169,7 +170,8 @@ export const createFolder = async (
     console.error("Error creating folder:", error);
     return {
       data: {} as Item,
-      error: error instanceof Error ? error.message : "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 };
@@ -181,10 +183,10 @@ export const createFolder = async (
  */
 export const uploadFiles = async (
   files: File[],
-  folderId?: number
+  folderId?: number,
 ): Promise<ApiResponse<Item[]>> => {
   try {
-    const fileRecords = files.map(file => ({
+    const fileRecords = files.map((file) => ({
       name: file.name,
       mimeType: file.type || "application/octet-stream",
       size: file.size,
@@ -213,7 +215,8 @@ export const uploadFiles = async (
     console.error("Error uploading files:", error);
     return {
       data: [],
-      error: error instanceof Error ? error.message : "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 };

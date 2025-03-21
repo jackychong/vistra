@@ -5,7 +5,12 @@ import { Box } from "@mui/material";
 import { CreateFolderDialog } from "./components/CreateFolderDialog";
 import { UploadFilesDialog } from "./components/UploadFilesDialog";
 import { GridSortModel } from "@mui/x-data-grid";
-import { getFolderContents, getFolderPath, Item, PaginationParams } from "@/services/api";
+import {
+  getFolderContents,
+  getFolderPath,
+  Item,
+  PaginationParams,
+} from "@/services/api";
 import { PageHeader } from "./components/PageHeader";
 import { ActionButtons } from "./components/ActionButtons";
 import { SearchBar } from "./components/SearchBar";
@@ -34,7 +39,9 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     order: "ASC",
   });
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderId);
+  const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(
+    folderId,
+  );
   const [folderPath, setFolderPath] = useState<Item[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);

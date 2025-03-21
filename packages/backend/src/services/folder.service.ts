@@ -67,7 +67,7 @@ export class FolderService {
   static async createFolder(
     name: string,
     userId: number,
-    parentId?: number
+    parentId?: number,
   ): Promise<Item> {
     const folder = await (Folder as FolderModel).create({
       name,
@@ -153,21 +153,23 @@ export class FolderService {
       type: QueryTypes.SELECT,
     });
 
-    return results.map((item: QueryResultItem): Item => ({
-      id: item.id,
-      name: item.name,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      parentId: item.parentId,
-      folderId: null,
-      mimeType: null,
-      size: null,
-      itemType: "folder",
-      user: {
-        id: item.createdById,
-        name: item.userName,
-      },
-    }));
+    return results.map(
+      (item: QueryResultItem): Item => ({
+        id: item.id,
+        name: item.name,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        parentId: item.parentId,
+        folderId: null,
+        mimeType: null,
+        size: null,
+        itemType: "folder",
+        user: {
+          id: item.createdById,
+          name: item.userName,
+        },
+      }),
+    );
   }
 
   /**
@@ -188,8 +190,8 @@ export class FolderService {
     } = queryParams;
 
     const offset = (Number(page) - 1) * Number(limit);
-    const searchCondition = search 
-      ? "AND (LOWER(f.name) LIKE LOWER(:search))" 
+    const searchCondition = search
+      ? "AND (LOWER(f.name) LIKE LOWER(:search))"
       : "";
     const parentCondition = parentId === undefined ? "IS NULL" : "= :parentId";
 

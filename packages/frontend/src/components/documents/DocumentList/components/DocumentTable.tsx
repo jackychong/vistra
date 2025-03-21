@@ -2,7 +2,17 @@
 
 import { DocumentTableProps } from "../types";
 import { formatFileSize, Item } from "@/services/api";
-import { Box, LinearProgress, IconButton, Paper, Stack, Typography, Select, MenuItem, Pagination } from "@mui/material";
+import {
+  Box,
+  LinearProgress,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+  Select,
+  MenuItem,
+  Pagination,
+} from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -16,30 +26,30 @@ const StyledFooter = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  borderTop: `1px solid ${theme.palette.divider}`
+  borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
 const StyledRowsPerPage = styled(Box)({
   display: "flex",
   alignItems: "center",
-  gap: "8px"
+  gap: "8px",
 });
 
 const StyledSelect = styled(Select)(({ theme }: { theme: Theme }) => ({
   minWidth: "70px",
   height: "32px",
   ".MuiOutlinedInput-notchedOutline": {
-    border: `1px solid ${theme.palette.divider}`
+    border: `1px solid ${theme.palette.divider}`,
   },
   "&.MuiInputBase-root": {
-    borderRadius: "4px"
-  }
+    borderRadius: "4px",
+  },
 }));
 
 const StyledPaginationItem = styled(Pagination)({
   "& .MuiPaginationItem-root": {
-    margin: "0 4px"
-  }
+    margin: "0 4px",
+  },
 });
 
 interface CustomFooterProps {
@@ -52,18 +62,21 @@ interface CustomFooterProps {
   onPaginationChange: (model: { page: number; pageSize: number }) => void;
 }
 
-const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => {
+const CustomFooter = ({
+  pagination,
+  onPaginationChange,
+}: CustomFooterProps) => {
   const handlePageSizeChange = (event: any) => {
     onPaginationChange({
       page: 0,
-      pageSize: Number(event.target.value)
+      pageSize: Number(event.target.value),
     });
   };
 
   const handlePageChange = (_: any, newPage: number) => {
     onPaginationChange({
       page: newPage - 1,
-      pageSize: pagination.limit
+      pageSize: pagination.limit,
     });
   };
 
@@ -132,7 +145,7 @@ export const DocumentTable = ({
       field: "user",
       headerName: "Created by",
       width: 150,
-      valueGetter: (params: any) => params.row?.user.name,
+      renderCell: (params: any) => params.row?.user?.name,
     },
     {
       field: "updatedAt",
@@ -176,7 +189,7 @@ export const DocumentTable = ({
           <LinearProgress />
         </Box>
       )}
-      
+
       <DataGrid
         rows={items}
         columns={columns}
@@ -210,55 +223,56 @@ export const DocumentTable = ({
           return params.row.itemType === "folder" ? "folder-row" : "";
         }}
         slots={{
-          footer: CustomFooter
+          footer: CustomFooter,
         }}
         slotProps={{
           footer: {
             pagination,
-            onPaginationChange
-          }
+            onPaginationChange,
+          },
         }}
         components={{
-          LoadingOverlay: () => null
+          LoadingOverlay: () => null,
         }}
         sx={(theme: Theme) => ({
           position: "relative",
           border: "none",
           "& .MuiDataGrid-main": {
-            minHeight: "400px"
+            minHeight: "400px",
           },
           "& .MuiDataGrid-virtualScroller": {
             opacity: loading ? 0.5 : 1,
             transition: "opacity 0.2s ease-in-out",
-            backgroundColor: theme.palette.background.default
+            backgroundColor: theme.palette.background.default,
           },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText
+            color: theme.palette.primary.contrastText,
           },
           "& .MuiDataGrid-columnHeaderTitle": {
-            fontWeight: "bold"
+            fontWeight: "bold",
           },
           "& .folder-row": {
-            cursor: "pointer"
+            cursor: "pointer",
           },
           "& .MuiDataGrid-cell": {
             borderBottom: `1px solid ${theme.palette.divider}`,
             "&:focus-within": {
-              outline: "none"
-            }
+              outline: "none",
+            },
           },
           "& .MuiDataGrid-row": {
             "&:hover": {
-              backgroundColor: theme.palette.action.hover
-            }
+              backgroundColor: theme.palette.action.hover,
+            },
           },
           "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
-            outline: "none"
+            outline: "none",
           },
-          "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within": {
-            outline: "none"
-          }
+          "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within":
+            {
+              outline: "none",
+            },
         })}
       />
     </Paper>

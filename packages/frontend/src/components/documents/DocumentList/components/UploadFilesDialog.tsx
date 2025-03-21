@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, DragEvent, ReactNode, ChangeEvent } from "react";
-import { Box, Button, Typography, styled, Theme, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  styled,
+  Theme,
+  CircularProgress,
+} from "@mui/material";
 import { Dialog, DialogProps } from "@/components/core/Dialog";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { uploadFiles, formatFileSize } from "@/services/api";
@@ -91,7 +98,7 @@ export const UploadFilesDialog = ({
 
     try {
       const response = await uploadFiles(files, folderId);
-      
+
       if (response.error) {
         setError(response.error);
       } else {
@@ -127,7 +134,9 @@ export const UploadFilesDialog = ({
               onClick={handleUpload}
               variant="contained"
               disabled={isUploading}
-              startIcon={isUploading ? <CircularProgress size={20} /> : undefined}
+              startIcon={
+                isUploading ? <CircularProgress size={20} /> : undefined
+              }
             >
               {isUploading ? "Uploading..." : "Upload"}
             </Button>
@@ -187,7 +196,8 @@ export const UploadFilesDialog = ({
               <Box>
                 <Typography variant="body2">{file.name}</Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {file.type || "Unknown type"} • Last modified: {new Date(file.lastModified).toLocaleDateString()}
+                  {file.type || "Unknown type"} • Last modified:{" "}
+                  {new Date(file.lastModified).toLocaleDateString()}
                 </Typography>
               </Box>
               <Typography variant="body2" color="textSecondary">

@@ -1,12 +1,22 @@
 "use client";
 
-import { Box, TextField, InputAdornment, IconButton, CircularProgress } from "@mui/material";
+import {
+  Box,
+  TextField,
+  InputAdornment,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
 import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { SearchBarProps } from "../types";
 import { useCallback, useEffect, useState } from "react";
 import debounce from "lodash/debounce";
 
-export const SearchBar = ({ value, onChange, loading = false }: SearchBarProps) => {
+export const SearchBar = ({
+  value,
+  onChange,
+  loading = false,
+}: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState(value);
 
   // Debounce the onChange callback
@@ -14,7 +24,7 @@ export const SearchBar = ({ value, onChange, loading = false }: SearchBarProps) 
     debounce((value: string) => {
       onChange(value);
     }, 300),
-    [onChange]
+    [onChange],
   );
 
   // Update local state when prop changes
@@ -69,9 +79,9 @@ export const SearchBar = ({ value, onChange, loading = false }: SearchBarProps) 
             bgcolor: "background.paper",
             "& .MuiOutlinedInput-root": {
               "&.Mui-disabled": {
-                backgroundColor: "action.hover"
-              }
-            }
+                backgroundColor: "action.hover",
+              },
+            },
           },
         }}
         disabled={loading}

@@ -39,7 +39,9 @@ export const PageHeader = ({
               variant="body1"
               onClick={() => onFolderClick(folder.id)}
               underline="hover"
-              color={index === folderPath.length - 1 ? "text.primary" : "inherit"}
+              color={
+                index === folderPath.length - 1 ? "text.primary" : "inherit"
+              }
               sx={{ cursor: "pointer" }}
             >
               {folder.name}

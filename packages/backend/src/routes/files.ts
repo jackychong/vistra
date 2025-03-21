@@ -26,7 +26,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // Add userId to each file record
-    const filesWithUser = files.map(file => ({
+    const filesWithUser = files.map((file) => ({
       ...file,
       userId: 1, // TODO: Get from auth
     }));

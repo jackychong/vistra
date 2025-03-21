@@ -15,18 +15,20 @@ export class FileService {
    */
   static async createFiles(files: CreateFileParams[]): Promise<File[]> {
     try {
-      const createdFiles = await File.bulkCreate(files.map((file: CreateFileParams) => ({
-        name: file.name,
-        mimeType: file.mimeType,
-        size: file.size,
-        folderId: file.folderId,
-        createdById: 1, // TODO: Get from auth
-      })));
+      const createdFiles = await File.bulkCreate(
+        files.map((file: CreateFileParams) => ({
+          name: file.name,
+          mimeType: file.mimeType,
+          size: file.size,
+          folderId: file.folderId,
+          createdById: 1, // TODO: Get from auth
+        })),
+      );
 
       // Fetch files with user data
       const filesWithUser = await File.findAll({
         where: {
-          id: createdFiles.map((file: File) => file.id)
+          id: createdFiles.map((file: File) => file.id),
         },
         include: [
           {

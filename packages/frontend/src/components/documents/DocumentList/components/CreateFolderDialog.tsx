@@ -6,7 +6,8 @@ import { Dialog, DialogProps } from "@/components/core/Dialog";
 import { TextField } from "@/components/core/TextField";
 import { createFolder } from "@/services/api";
 
-interface CreateFolderDialogProps extends Omit<DialogProps, "onClose" | "title" | "actions"> {
+interface CreateFolderDialogProps
+  extends Omit<DialogProps, "onClose" | "title" | "actions"> {
   open: boolean;
   onClose: () => void;
   parentId?: number;
@@ -35,7 +36,7 @@ export const CreateFolderDialog = ({
 
     try {
       const response = await createFolder(folderName.trim(), parentId);
-      
+
       if (response.error) {
         setError(response.error);
       } else {
@@ -60,7 +61,7 @@ export const CreateFolderDialog = ({
     <Dialog
       open={open}
       onClose={handleClose}
-      maxWidth="xs" 
+      maxWidth="xs"
       fullWidth
       title="Create New Folder"
       actions={

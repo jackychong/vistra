@@ -62,10 +62,12 @@ router.post("/", async (req: CreateFolderRequest, res: Response) => {
     console.error("Error creating folder:", error);
     if (error instanceof Error) {
       // Handle validation errors
-      if (error.message.includes("Validation error") || 
-          error.message.includes("already exists") ||
-          error.message.includes("cannot be empty") ||
-          error.message.includes("Invalid folder name")) {
+      if (
+        error.message.includes("Validation error") ||
+        error.message.includes("already exists") ||
+        error.message.includes("cannot be empty") ||
+        error.message.includes("Invalid folder name")
+      ) {
         return res.status(400).json({ error: error.message });
       }
     }

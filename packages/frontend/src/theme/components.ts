@@ -3,15 +3,29 @@ import { Components, Theme } from "@mui/material/styles";
 export const components: Components<Theme> = {
   MuiButton: {
     styleOverrides: {
-      root: {
+      root: ({ theme }) => ({
         textTransform: "none",
         borderRadius: "50px",
         padding: "8px 24px",
-      },
+        "&.MuiButton-contained": {
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          "&:hover": {
+            backgroundColor: theme.palette.primary.dark,
+          },
+        },
+        "&.MuiButton-outlined": {
+          borderColor: theme.palette.primary.main,
+          color: theme.palette.primary.main,
+          "&:hover": {
+            backgroundColor: theme.palette.action.hover,
+          },
+        },
+      }),
       contained: {
         boxShadow: "none",
         "&:hover": {
-          boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
+          boxShadow: "none",
         },
       },
     },
@@ -25,31 +39,38 @@ export const components: Components<Theme> = {
       size: "small",
     },
     styleOverrides: {
-      root: {
+      root: ({ theme }) => ({
         "& .MuiOutlinedInput-root": {
           borderRadius: "8px",
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: theme.palette.primary.main,
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: theme.palette.primary.main,
+          },
         },
-      },
+      }),
     },
   },
   MuiCard: {
     styleOverrides: {
-      root: {
+      root: ({ theme }) => ({
         borderRadius: "12px",
-        boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
-      },
+        boxShadow: "0px 2px 4px " + theme.palette.divider,
+      }),
     },
   },
   MuiTableCell: {
     styleOverrides: {
-      root: {
-        borderBottom: "1px solid #e0e0e0",
+      root: ({ theme }) => ({
+        borderBottom: `1px solid ${theme.palette.divider}`,
         padding: "16px",
-      },
-      head: {
+      }),
+      head: ({ theme }) => ({
         fontWeight: 600,
-        backgroundColor: "#fafafa",
-      },
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+      }),
     },
   },
   MuiDialog: {
@@ -61,31 +82,65 @@ export const components: Components<Theme> = {
   },
   MuiDialogTitle: {
     styleOverrides: {
-      root: {
+      root: ({ theme }) => ({
         fontSize: "1.25rem",
         fontWeight: 500,
-      },
+        color: theme.palette.text.primary,
+      }),
     },
   },
   MuiChip: {
     styleOverrides: {
-      root: {
+      root: ({ theme }) => ({
         borderRadius: "8px",
-      },
+        "&.MuiChip-filled": {
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+        },
+        "&.MuiChip-outlined": {
+          borderColor: theme.palette.primary.main,
+          color: theme.palette.primary.main,
+        },
+      }),
     },
   },
   MuiTooltip: {
     styleOverrides: {
-      tooltip: {
+      tooltip: ({ theme }) => ({
+        backgroundColor: theme.palette.grey[800],
+        color: theme.palette.common.white,
         borderRadius: "4px",
         fontSize: "0.75rem",
-      },
+      }),
     },
   },
   MuiAlert: {
     styleOverrides: {
       root: {
         borderRadius: "8px",
+      },
+      standardSuccess: ({ theme }) => ({
+        backgroundColor: theme.palette.success.light,
+        color: theme.palette.success.main,
+      }),
+      standardError: ({ theme }) => ({
+        backgroundColor: theme.palette.error.light,
+        color: theme.palette.error.main,
+      }),
+      standardWarning: ({ theme }) => ({
+        backgroundColor: theme.palette.warning.light,
+        color: theme.palette.warning.main,
+      }),
+      standardInfo: ({ theme }) => ({
+        backgroundColor: theme.palette.info.light,
+        color: theme.palette.info.main,
+      }),
+    },
+  },
+  MuiLinearProgress: {
+    styleOverrides: {
+      root: {
+        borderRadius: "4px",
       },
     },
   },
