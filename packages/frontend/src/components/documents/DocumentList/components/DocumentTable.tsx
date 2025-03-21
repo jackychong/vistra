@@ -1,9 +1,9 @@
-     "use client";
+"use client";
 
 import { DocumentTableProps } from "../types";
 import { formatFileSize, Item } from "@/services/api";
 import { Box, LinearProgress, IconButton, Paper, Stack, Typography, Select, MenuItem, Pagination } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { styled, Theme } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   MoreVert as MoreVertIcon,
@@ -11,13 +11,13 @@ import {
   InsertDriveFile as FileIcon,
 } from "@mui/icons-material";
 
-const StyledFooter = styled(Box)({
+const StyledFooter = styled(Box)(({ theme }: { theme: Theme }) => ({
   padding: "8px 16px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  borderTop: "1px solid rgba(224, 224, 224, 1)"
-});
+  borderTop: `1px solid ${theme.palette.divider}`
+}));
 
 const StyledRowsPerPage = styled(Box)({
   display: "flex",
@@ -25,16 +25,16 @@ const StyledRowsPerPage = styled(Box)({
   gap: "8px"
 });
 
-const StyledSelect = styled(Select)({
+const StyledSelect = styled(Select)(({ theme }: { theme: Theme }) => ({
   minWidth: "70px",
   height: "32px",
   ".MuiOutlinedInput-notchedOutline": {
-    border: "1px solid rgba(0, 0, 0, 0.23)"
+    border: `1px solid ${theme.palette.divider}`
   },
   "&.MuiInputBase-root": {
     borderRadius: "4px"
   }
-});
+}));
 
 const StyledPaginationItem = styled(Pagination)({
   "& .MuiPaginationItem-root": {
@@ -95,6 +95,7 @@ const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => 
     </StyledFooter>
   );
 };
+
 export const DocumentTable = ({
   items,
   loading,
@@ -119,9 +120,9 @@ export const DocumentTable = ({
       renderCell: (params: any) => (
         <Stack direction="row" alignItems="center" spacing={1}>
           {params.row.itemType === "folder" ? (
-            <FolderIcon sx={{ color: "#FFA726" }} />
+            <FolderIcon sx={{ color: "warning.main" }} />
           ) : (
-            <FileIcon sx={{ color: "#2196F3" }} />
+            <FileIcon sx={{ color: "info.main" }} />
           )}
           {params.value}
         </Stack>
@@ -144,7 +145,6 @@ export const DocumentTable = ({
           year: "numeric",
         });
       },
-      
     },
     {
       field: "size",
@@ -171,84 +171,96 @@ export const DocumentTable = ({
 
   return (
     <Paper sx={{ borderRadius: 2, overflow: "hidden", mb: 2, height: 500 }}>
-      {/* Linear progress at the top */}
       {loading && (
-        <Box sx={{ width: '100%', position: 'absolute', top: 0, zIndex: 1 }}>
+        <Box sx={{ width: "100%", position: "absolute", top: 0, zIndex: 1 }}>
           <LinearProgress />
         </Box>
       )}
       
       <DataGrid
-          rows={items}
-          columns={columns}
-          initialState={{
-            sorting: {
-              sortModel: [
-                {
-                  field: sorting.field,
-                  sort: sorting.order === "ASC" ? "asc" : "desc",
-                },
-              ],
-            },
-          }}
-          paginationModel={{
-            pageSize: pagination.limit,
-            page: pagination.page - 1, // DataGrid uses 0-based indexing
-          }}
-          pageSizeOptions={[10, 20, 50]}
-          pagination
-          paginationMode="server"
-          rowCount={pagination.totalItems || 10}
-          onPaginationModelChange={onPaginationChange}
-          sortingMode="server"
-          onSortModelChange={onSortChange}
-          checkboxSelection
-          onRowSelectionModelChange={onSelectionChange}
-          rowSelectionModel={selectedItems}
-          onRowClick={handleClick}
-          loading={loading}
-          getRowClassName={(params: any) => {
-            return params.row.itemType === "folder" ? "folder-row" : "";
-          }}
-          slots={{
-            footer: CustomFooter
-          }}
-          slotProps={{
-            footer: {
-              pagination,
-              onPaginationChange
+        rows={items}
+        columns={columns}
+        initialState={{
+          sorting: {
+            sortModel: [
+              {
+                field: sorting.field,
+                sort: sorting.order === "ASC" ? "asc" : "desc",
+              },
+            ],
+          },
+        }}
+        paginationModel={{
+          pageSize: pagination.limit,
+          page: pagination.page - 1,
+        }}
+        pageSizeOptions={[10, 20, 50]}
+        pagination
+        paginationMode="server"
+        rowCount={pagination.totalItems || 10}
+        onPaginationModelChange={onPaginationChange}
+        sortingMode="server"
+        onSortModelChange={onSortChange}
+        checkboxSelection
+        onRowSelectionModelChange={onSelectionChange}
+        rowSelectionModel={selectedItems}
+        onRowClick={handleClick}
+        loading={loading}
+        getRowClassName={(params: any) => {
+          return params.row.itemType === "folder" ? "folder-row" : "";
+        }}
+        slots={{
+          footer: CustomFooter
+        }}
+        slotProps={{
+          footer: {
+            pagination,
+            onPaginationChange
+          }
+        }}
+        components={{
+          LoadingOverlay: () => null
+        }}
+        sx={(theme: Theme) => ({
+          position: "relative",
+          border: "none",
+          "& .MuiDataGrid-main": {
+            minHeight: "400px"
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            opacity: loading ? 0.5 : 1,
+            transition: "opacity 0.2s ease-in-out",
+            backgroundColor: theme.palette.background.default
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText
+          },
+          "& .MuiDataGrid-columnHeaderTitle": {
+            fontWeight: "bold"
+          },
+          "& .folder-row": {
+            cursor: "pointer"
+          },
+          "& .MuiDataGrid-cell": {
+            borderBottom: `1px solid ${theme.palette.divider}`,
+            "&:focus-within": {
+              outline: "none"
             }
-          }}
-          components={{
-            LoadingOverlay: () => null // Disable default loading overlay
-          }}
-          sx={{
-            position: 'relative', // For absolute positioning of LinearProgress
-            border: "none",
-            // Maintain consistent height during loading
-            "& .MuiDataGrid-main": {
-              minHeight: "400px"
-            },
-            // Prevent content shifting during loading
-            "& .MuiDataGrid-virtualScroller": {
-              opacity: loading ? 0.5 : 1,
-              transition: "opacity 0.2s ease-in-out"
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#0D47A1", // Dark blue
-              color: "white",
-            },
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: "bold",
-            },
-            "& .folder-row": {
-              cursor: "pointer",
-            },
-            "& .MuiDataGrid-cell:focus-within": {
-              outline: "none",
-            },
-          }}
-        />
+          },
+          "& .MuiDataGrid-row": {
+            "&:hover": {
+              backgroundColor: theme.palette.action.hover
+            }
+          },
+          "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
+            outline: "none"
+          },
+          "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within": {
+            outline: "none"
+          }
+        })}
+      />
     </Paper>
   );
 };
