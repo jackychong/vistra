@@ -2,7 +2,7 @@
 
 import { DocumentTableProps } from "../types";
 import { formatFileSize, Item } from "@/services/api";
-import { Box, CircularProgress, IconButton, Paper, Stack, Typography, Select, MenuItem, Pagination } from "@mui/material";
+import { Box, LinearProgress, IconButton, Paper, Stack, Typography, Select, MenuItem, Pagination } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -171,19 +171,14 @@ export const DocumentTable = ({
 
   return (
     <Paper sx={{ borderRadius: 2, overflow: "hidden", mb: 2, height: 500 }}>
-      {loading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
-          <CircularProgress size={40} />
+      {/* Linear progress at the top */}
+      {loading && (
+        <Box sx={{ width: '100%', position: 'absolute', top: 0, zIndex: 1 }}>
+          <LinearProgress />
         </Box>
-      ) : (
-        <DataGrid
+      )}
+      
+      <DataGrid
           rows={items}
           columns={columns}
           initialState={{
@@ -224,8 +219,21 @@ export const DocumentTable = ({
               onPaginationChange
             }
           }}
+          components={{
+            LoadingOverlay: () => null // Disable default loading overlay
+          }}
           sx={{
+            position: 'relative', // For absolute positioning of LinearProgress
             border: "none",
+            // Maintain consistent height during loading
+            "& .MuiDataGrid-main": {
+              minHeight: "400px"
+            },
+            // Prevent content shifting during loading
+            "& .MuiDataGrid-virtualScroller": {
+              opacity: loading ? 0.5 : 1,
+              transition: "opacity 0.2s ease-in-out"
+            },
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "#0D47A1", // Dark blue
               color: "white",
@@ -241,7 +249,6 @@ export const DocumentTable = ({
             },
           }}
         />
-      )}
     </Paper>
   );
 };

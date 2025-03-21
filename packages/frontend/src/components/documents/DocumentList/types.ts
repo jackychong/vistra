@@ -30,6 +30,7 @@ export interface ActionButtonsProps {
 export interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
+  loading?: boolean;
 }
 
 export interface DocumentTableProps {

@@ -1,5 +1,12 @@
-import { QueryTypes } from "sequelize";
+import { Model, ModelStatic, QueryTypes } from "sequelize";
 import { sequelize } from "../models/index.js";
+import { Folder } from "../models/Folder.js";
+import { User } from "../models/User.js";
+
+type FolderModel = ModelStatic<Model> & {
+  create(values: any, options?: any): Promise<any>;
+  findByPk(id: number, options?: any): Promise<any>;
+};
 
 export interface QueryParams {
   search?: string;
@@ -9,7 +16,7 @@ export interface QueryParams {
   sortOrder?: string;
 }
 
-interface QueryResultItem {
+export interface QueryResultItem extends Model {
   id: number;
   name: string;
   createdAt: string;
@@ -50,9 +57,6 @@ export interface PaginatedResponse {
   };
 }
 
-import { Folder } from "../models/Folder.js";
-import { User } from "../models/User.js";
-
 export class FolderService {
   /**
    * Create a new folder
@@ -65,13 +69,13 @@ export class FolderService {
     userId: number,
     parentId?: number
   ): Promise<Item> {
-    const folder = await Folder.create({
+    const folder = await (Folder as FolderModel).create({
       name,
       parentId,
       createdById: userId,
     });
 
-    const folderWithUser = await Folder.findByPk(folder.id, {
+    const folderWithUser = await (Folder as FolderModel).findByPk(folder.id, {
       include: [
         {
           model: User,
@@ -149,7 +153,7 @@ export class FolderService {
       type: QueryTypes.SELECT,
     });
 
-    return results.map((item): Item => ({
+    return results.map((item: QueryResultItem): Item => ({
       id: item.id,
       name: item.name,
       createdAt: item.createdAt,
@@ -184,7 +188,9 @@ export class FolderService {
     } = queryParams;
 
     const offset = (Number(page) - 1) * Number(limit);
-    const searchCondition = search ? "AND LOWER(name) LIKE LOWER(:search)" : "";
+    const searchCondition = search 
+      ? "AND (LOWER(f.name) LIKE LOWER(:search))" 
+      : "";
     const parentCondition = parentId === undefined ? "IS NULL" : "= :parentId";
 
     // First, get the total count
@@ -194,7 +200,7 @@ export class FolderService {
         FROM folders f
         WHERE parentId ${parentCondition}
         AND f.deletedAt IS NULL
-        ${searchCondition}
+        ${search ? "AND LOWER(f.name) LIKE LOWER(:search)" : ""}
         
         UNION ALL
         
@@ -202,7 +208,7 @@ export class FolderService {
         FROM files f
         WHERE folderId ${parentCondition}
         AND f.deletedAt IS NULL
-        ${searchCondition}
+        ${search ? "AND (LOWER(f.name) LIKE LOWER(:search))" : ""}
       )
       SELECT SUM(count) as total_count FROM combinedResults
     `;
@@ -236,7 +242,7 @@ export class FolderService {
         LEFT JOIN users u ON f.createdById = u.id
         WHERE parentId ${parentCondition}
         AND f.deletedAt IS NULL
-        ${searchCondition}
+        ${search ? "AND LOWER(f.name) LIKE LOWER(:search)" : ""}
         
         UNION ALL
         
@@ -256,7 +262,7 @@ export class FolderService {
         LEFT JOIN users u ON f.createdById = u.id
         WHERE folderId ${parentCondition}
         AND f.deletedAt IS NULL
-        ${searchCondition}
+        ${search ? "AND (LOWER(f.name) LIKE LOWER(:search))" : ""}
       )
       SELECT *
       FROM combinedResults
