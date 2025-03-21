@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box } from "@mui/material";
 import { CreateFolderDialog } from "./components/CreateFolderDialog";
+import { UploadFilesDialog } from "./components/UploadFilesDialog";
 import { GridSortModel } from "@mui/x-data-grid";
 import { getFolderContents, getFolderPath, Item, PaginationParams } from "@/services/api";
 import { PageHeader } from "./components/PageHeader";
@@ -35,6 +36,8 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderId);
   const [folderPath, setFolderPath] = useState<Item[]>([]);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
 
   // Fetch folder path when current folder changes
   useEffect(() => {
@@ -115,11 +118,12 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   };
 
   const handleUploadFiles = () => {
-    // TODO: Implement file upload
-    console.log("Upload files clicked");
+    setIsUploadDialogOpen(true);
   };
 
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const handleUploadSuccess = () => {
+    fetchData();
+  };
 
   const handleAddFolder = () => {
     setIsCreateDialogOpen(true);
@@ -193,6 +197,13 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
         open={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onSuccess={handleCreateSuccess}
+        parentId={currentFolderId ? parseInt(currentFolderId) : undefined}
+      />
+
+      <UploadFilesDialog
+        open={isUploadDialogOpen}
+        onClose={() => setIsUploadDialogOpen(false)}
+        onSuccess={handleUploadSuccess}
         parentId={currentFolderId ? parseInt(currentFolderId) : undefined}
       />
 

@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import foldersRouter from "./routes/folders.js";
+import filesRouter from "./routes/files.js";
 
 const app: Express = express();
 
@@ -19,5 +20,6 @@ app.get("/health", (_req: Request, res: Response): void => {
 
 // API routes
 app.use("/api/folders", foldersRouter);
+app.use("/api/files", filesRouter);
 
 export default app;

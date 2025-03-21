@@ -76,7 +76,7 @@ export class File extends Model<File> {
   })
   declare folderId: number | null;
 
-  @BelongsTo(() => Folder)
+  @BelongsTo(() => Folder, { foreignKey: "folderId" })
   declare folder?: Folder;
 
   @ForeignKey(() => User)
@@ -87,7 +87,7 @@ export class File extends Model<File> {
   declare createdById: number;
 
   @BelongsTo(() => User)
-  declare createdBy?: User;
+  declare user?: User;
 
   // Timestamps
   declare createdAt: Date;

@@ -140,11 +140,11 @@ export const getFolderPath = async (
 /**
  * Create a new folder
  * @param name - Folder name
- * @param parentId - Optional parent folder ID
+ * @param folderId - Optional folder folder ID
  */
 export const createFolder = async (
   name: string,
-  parentId?: number
+  folderId?: number
 ): Promise<ApiResponse<Item>> => {
   try {
     const response = await fetch(`${API_BASE_URL}/folders`, {
@@ -169,6 +169,50 @@ export const createFolder = async (
     console.error("Error creating folder:", error);
     return {
       data: {} as Item,
+      error: error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+};
+
+/**
+ * Create file records in the database
+ * @param files - Array of files to create records for
+ * @param folderId - Optional parent folder ID
+ */
+export const uploadFiles = async (
+  files: File[],
+  folderId?: number
+): Promise<ApiResponse<Item[]>> => {
+  try {
+    const fileRecords = files.map(file => ({
+      name: file.name,
+      mimeType: file.type || "application/octet-stream",
+      size: file.size,
+      folderId: folderId || null,
+    }));
+
+    const response = await fetch(`${API_BASE_URL}/files`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ files: fileRecords }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        data: [],
+        error: errorData.error || "Failed to create files",
+      };
+    }
+
+    const data = await response.json();
+    return { data };
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    return {
+      data: [],
       error: error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
