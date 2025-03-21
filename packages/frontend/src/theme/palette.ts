@@ -1,7 +1,7 @@
 import { PaletteOptions } from "@mui/material";
 
 // Vistra color system
-const colors = {
+export const colors = {
   vistraBlue: "#0909b7",
   vistraWhite: "#fff",
   spaceBlue: "#001a5b",
