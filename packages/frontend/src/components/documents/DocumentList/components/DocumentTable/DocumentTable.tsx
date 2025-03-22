@@ -188,7 +188,9 @@ export const DocumentTable = ({
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+            {selectedItem?.itemType === "file" && (
+              <MenuItem onClick={handleDelete}>Delete</MenuItem>
+            )}
             <MenuItem onClick={handleMove}>Move</MenuItem>
             <MenuItem onClick={handleArchive}>Archive</MenuItem>
           </Menu>

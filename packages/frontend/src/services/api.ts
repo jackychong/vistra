@@ -221,6 +221,37 @@ export const uploadFiles = async (
   }
 };
 
+/**
+ * Delete a file by ID
+ * @param fileId - ID of the file to delete
+ */
+export const deleteFile = async (fileId: number): Promise<ApiResponse<void>> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/files/${fileId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        data: undefined,
+        error: errorData.error || "Failed to delete file",
+      };
+    }
+
+    return { data: undefined };
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return {
+      data: undefined,
+      error: error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+};
+
 export const formatFileSize = (bytes: number | null): string => {
   if (bytes === null) return "-";
 

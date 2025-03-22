@@ -67,4 +67,20 @@ export class FileService {
       throw new Error("Failed to get file");
     }
   }
+
+  /**
+   * Delete file by ID
+   */
+  static async deleteFile(id: number): Promise<void> {
+    try {
+      const file = await File.findByPk(id);
+      if (!file) {
+        throw new Error("File not found");
+      }
+      await file.destroy();
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      throw new Error("Failed to delete file");
+    }
+  }
 }

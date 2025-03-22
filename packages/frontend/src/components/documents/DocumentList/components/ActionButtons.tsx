@@ -14,13 +14,6 @@ export const ActionButtons = ({
         variant="outlined"
         startIcon={<UploadIcon />}
         onClick={onUploadFiles}
-        sx={{
-          borderRadius: "50px",
-          textTransform: "none",
-          color: "primary.main",
-          borderColor: "primary.main",
-          px: 3,
-        }}
       >
         Upload files
       </Button>
@@ -28,15 +21,6 @@ export const ActionButtons = ({
         variant="contained"
         startIcon={<AddIcon />}
         onClick={onAddFolder}
-        sx={{
-          borderRadius: "50px",
-          textTransform: "none",
-          bgcolor: "#1a237e",
-          "&:hover": {
-            bgcolor: "#0d47a1",
-          },
-          px: 3,
-        }}
       >
         Add new folder
       </Button>

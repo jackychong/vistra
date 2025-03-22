@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Box } from "@mui/material";
+import { Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Alert } from "@mui/material";
 import { CreateFolderDialog } from "./components/CreateFolderDialog";
 import { UploadFilesDialog } from "./components/UploadFilesDialog";
 import { GridSortModel } from "@mui/x-data-grid";
 import {
   getFolderContents,
   getFolderPath,
+  deleteFile,
   Item,
   PaginationParams,
 } from "@/services/api";
@@ -45,6 +46,17 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   const [folderPath, setFolderPath] = useState<Item[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [notImplementedDialog, setNotImplementedDialog] = useState({
+    open: false,
+    action: "",
+  });
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    item: Item | null;
+  }>({
+    open: false,
+    item: null,
+  });
 
   // Fetch folder path when current folder changes
   useEffect(() => {
@@ -182,6 +194,42 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     }
   };
 
+  const handleDeleteItem = (item: Item) => {
+    if (item.itemType === "folder") {
+      setNotImplementedDialog({ open: true, action: "Delete folder" });
+      return;
+    }
+    setDeleteDialog({ open: true, item });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.item) return;
+
+    const response = await deleteFile(deleteDialog.item.id);
+    if (response.error) {
+      setError(response.error);
+    } else {
+      fetchData();
+    }
+    setDeleteDialog({ open: false, item: null });
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialog({ open: false, item: null });
+  };
+
+  const handleMoveItem = () => {
+    setNotImplementedDialog({ open: true, action: "Move" });
+  };
+
+  const handleArchiveItem = () => {
+    setNotImplementedDialog({ open: true, action: "Archive" });
+  };
+
+  const handleCloseNotImplemented = () => {
+    setNotImplementedDialog({ open: false, action: "" });
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <ErrorSnackbar error={error} onClose={() => setError(null)} />
@@ -224,7 +272,43 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
         onSortChange={handleSortChange}
         onSelectionChange={handleSelectionChange}
         onRowClick={handleRowClick}
+        onDeleteItem={handleDeleteItem}
+        onMoveItem={handleMoveItem}
+        onArchiveItem={handleArchiveItem}
       />
+
+      <Dialog
+        open={notImplementedDialog.open}
+        onClose={handleCloseNotImplemented}
+      >
+        <DialogTitle>{notImplementedDialog.action} Action</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This feature is not implemented yet.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNotImplemented}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={deleteDialog.open}
+        onClose={handleCancelDelete}
+      >
+        <DialogTitle>Delete File</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete "{deleteDialog.item?.name}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
