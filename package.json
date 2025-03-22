@@ -22,9 +22,9 @@
     "packages/*"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
+    "@eslint/js": "^9.23.0",
     "@types/umzug": "^2.3.9",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
@@ -32,7 +32,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "prettier": "^3.5.3",
-    "typescript-eslint": "^8.26.1",
+    "typescript-eslint": "^8.27.0",
     "umzug": "^3.8.2"
   }
 }
