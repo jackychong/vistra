@@ -209,16 +209,21 @@ export const uploadFiles = async (
       body: JSON.stringify({ files: fileRecords }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
       return {
-        data: { success: [], errors: [] },
-        error: errorData.error || "Failed to create files",
+        data: { success: [], errors: data.errors || [] },
+        error: data.error || "Failed to create files",
       };
     }
 
-    const data = await response.json();
-    return { data };
+    return {
+      data: {
+        success: data.success || [],
+        errors: data.errors || []
+      }
+    };
   } catch (error) {
     console.error("Error uploading files:", error);
     return {
@@ -241,6 +246,13 @@ export const deleteFile = async (fileId: number): Promise<ApiResponse<void>> => 
         "Content-Type": "application/json",
       },
     });
+
+    if (response.status === 404) {
+      return {
+        data: undefined,
+        error: "File not found"
+      };
+    }
 
     if (!response.ok) {
       const errorData = await response.json();
