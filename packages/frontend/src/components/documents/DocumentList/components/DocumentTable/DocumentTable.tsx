@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Box, IconButton, Paper, Stack, Typography, MenuItem, Menu } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import {
   MoreVert as MoreVertIcon,
   FolderOpenOutlined as FolderIcon,
@@ -13,6 +12,7 @@ import {
   StyledRowsPerPage,
   StyledSelect,
   StyledPaginationItem,
+  StyledDataGrid,
 } from "./styles";
 
 const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => {
@@ -201,7 +201,7 @@ export const DocumentTable = ({
 
   return (
     <Paper sx={{ borderRadius: 2, overflow: "hidden", mb: 2, height: 500 }}>
-      <DataGrid
+      <StyledDataGrid
         rows={items}
         columns={columns}
         disableColumnFilter
@@ -247,23 +247,6 @@ export const DocumentTable = ({
         }}
         components={{
           LoadingOverlay: () => null,
-        }}
-        sx={{
-          position: "relative",
-          border: "none",
-          "& .MuiDataGrid-main": {
-            minHeight: "400px",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            opacity: loading ? 0.5 : 1,
-            transition: "opacity 0.2s ease-in-out",
-          },
-          "& .MuiDataGrid-sortIcon": {
-            opacity: 1
-          },
-          "& .MuiDataGrid-columnHeader .MuiIconButton-root:hover": {
-            backgroundColor: "transparent"
-          },
         }}
       />
     </Paper>

@@ -1,5 +1,24 @@
 import { Box, Select, Pagination, Theme } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { DataGrid } from "@mui/x-data-grid";
+
+export const StyledDataGrid = styled(DataGrid)(({ theme }: { theme: Theme }) => ({
+  position: "relative",
+  border: "none",
+  "& .MuiDataGrid-main": {
+    minHeight: "400px",
+  },
+  "& .MuiDataGrid-virtualScroller": {
+    opacity: ({ loading }: { loading: boolean }) => loading ? 0.5 : 1,
+    transition: "opacity 0.2s ease-in-out",
+  },
+  "& .MuiDataGrid-sortIcon": {
+    opacity: 1
+  },
+  "& .MuiDataGrid-columnHeader .MuiIconButton-root:hover": {
+    backgroundColor: "transparent"
+  },
+}));
 
 export const StyledFooter = styled(Box)(({ theme }: { theme: Theme }) => ({
   padding: "8px 16px",
