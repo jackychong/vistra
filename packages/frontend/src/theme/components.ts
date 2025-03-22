@@ -177,7 +177,6 @@ export const components: Components<Theme> = {
   MuiIconButton: {
     styleOverrides: {
       root: ({ theme }: { theme: Theme }) => ({
-        padding: "8px",
         color: theme.palette.text.secondary,
         "&:hover": {
           backgroundColor: theme.palette.action.hover,

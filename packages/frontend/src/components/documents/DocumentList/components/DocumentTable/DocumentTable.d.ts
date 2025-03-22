@@ -12,6 +12,10 @@ export interface DocumentTableProps {
   onSortChange: (model: GridSortModel) => void;
   onSelectionChange: (selection: number[]) => void;
   onRowClick: (item: Item) => void;
+  onDeleteItem?: (item: Item) => void;
+  onMoveItem?: (item: Item) => void;
+  onArchiveItem?: (item: Item) => void;
+  onNameEdit?: (item: Item, newName: string) => void;
 }
 
 export interface CustomFooterProps {

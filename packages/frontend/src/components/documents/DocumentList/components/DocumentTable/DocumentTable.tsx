@@ -170,8 +170,8 @@ export const DocumentTable = ({
       sortable: false,
       renderCell: (params: any) => (
         <>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleMenuOpen(e, params.row)}
           >
             <MoreVertIcon fontSize="small" />
