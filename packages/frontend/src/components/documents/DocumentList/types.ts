@@ -15,10 +15,6 @@ export interface SortingState {
 
 // Component Props
 export interface PageHeaderProps {
-  currentFolderId?: string;
-  folderPath: Item[];
-  onBackToRoot: () => void;
-  onFolderClick: (folderId: number) => void;
   children?: React.ReactNode;
 }
 
@@ -30,6 +26,12 @@ export interface ActionButtonsProps {
 export interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
+}
+
+export interface BreadCrumbProps {
+  folderPath: Item[];
+  onBackToRoot: () => void;
+  onFolderClick: (folderId: number) => void;
 }
 
 export interface DocumentTableProps {

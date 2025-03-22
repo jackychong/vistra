@@ -1,65 +1,18 @@
 import React, { useState } from "react";
-import { Box, IconButton, Paper, Stack, Typography, MenuItem, Menu } from "@mui/material";
+import { IconButton, Paper, Menu, MenuItem } from "@mui/material";
 import {
   MoreVert as MoreVertIcon,
   FolderOpenOutlined as FolderIcon,
   DescriptionOutlined as FileIcon,
 } from "@mui/icons-material";
 import { formatFileSize, Item } from "@/services/api";
-import type { DocumentTableProps, CustomFooterProps } from "./Component";
+import type { DocumentTableProps } from "./DocumentTable.d";
+import { CustomFooter } from "./CustomFooter";
 import {
-  StyledFooter,
-  StyledRowsPerPage,
-  StyledSelect,
-  StyledPaginationItem,
   StyledDataGrid,
   StyledNameCell,
   StyledNameText,
 } from "./styles";
-
-const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => {
-  const handlePageSizeChange = (event: any) => {
-    onPaginationChange({
-      page: 0,
-      pageSize: Number(event.target.value),
-    });
-  };
-
-  const handlePageChange = (_: any, newPage: number) => {
-    onPaginationChange({
-      page: newPage - 1,
-      pageSize: pagination.limit,
-    });
-  };
-
-  return (
-    <StyledFooter>
-      <StyledRowsPerPage>
-        <Typography>Show</Typography>
-        <StyledSelect
-          size="small"
-          value={pagination.limit}
-          onChange={handlePageSizeChange}
-        >
-          {[10, 20, 50].map((size) => (
-            <MenuItem key={size} value={size}>
-              {size}
-            </MenuItem>
-          ))}
-        </StyledSelect>
-        <Typography>rows per page</Typography>
-      </StyledRowsPerPage>
-      <StyledPaginationItem
-        page={pagination.page}
-        count={pagination.totalPages}
-        onChange={handlePageChange}
-        shape="rounded"
-        boundaryCount={2}
-        siblingCount={1}
-      />
-    </StyledFooter>
-  );
-};
 
 export const DocumentTable = ({
   items,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Alert } from "@mui/material";
+import { Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Alert, Stack } from "@mui/material";
 import { CreateFolderDialog } from "./components/CreateFolderDialog";
 import { UploadFilesDialog } from "./components/UploadFilesDialog";
 import { GridSortModel } from "@mui/x-data-grid";
@@ -15,6 +15,7 @@ import {
 import { PageHeader } from "./components/PageHeader";
 import { ActionButtons } from "./components/ActionButtons";
 import { SearchBar } from "./components/SearchBar";
+import { BreadCrumb } from "./components/BreadCrumb";
 import { DocumentTable } from "./components/DocumentTable";
 import { ErrorSnackbar } from "./components/ErrorSnackbar";
 import { PaginationState, SortingState } from "./types";
@@ -234,19 +235,27 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     <Box sx={{ p: 3 }}>
       <ErrorSnackbar error={error} onClose={() => setError(null)} />
 
-      <PageHeader
-        currentFolderId={currentFolderId}
-        folderPath={folderPath}
-        onBackToRoot={handleBackToRoot}
-        onFolderClick={handleFolderClick}
-      >
+      <PageHeader>
         <ActionButtons
           onUploadFiles={handleUploadFiles}
           onAddFolder={handleAddFolder}
         />
       </PageHeader>
 
-      <SearchBar value={searchTerm} onChange={handleSearch} />
+      <Stack 
+        direction={{ xs: "column", sm: "row" }} spacing={2} 
+        alignItems={{ xs: null, sm: "center" }} mb={3}
+      >
+        <SearchBar 
+          value={searchTerm} 
+          onChange={handleSearch}
+        />
+        <BreadCrumb
+          folderPath={folderPath}
+          onBackToRoot={handleBackToRoot}
+          onFolderClick={handleFolderClick}
+        />
+      </Stack>
 
       <CreateFolderDialog
         open={isCreateDialogOpen}
