@@ -58,17 +58,9 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
   });
 
-  // Add unique constraint for file name within folder
-  await queryInterface.addIndex("files", ["name", "folderId"], {
-    unique: true,
-    name: "unique_file_name_in_folder",
-    where: {
-      deletedAt: null,
-    },
-  });
+  // No unique constraint - handled at application level
 };
 
 export const down: Migration = async ({ context: queryInterface }) => {
-  await queryInterface.removeIndex("files", "unique_file_name_in_folder");
   await queryInterface.dropTable("files");
 };

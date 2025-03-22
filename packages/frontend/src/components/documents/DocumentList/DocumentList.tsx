@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Dialog,
@@ -9,19 +9,12 @@ import {
   DialogContentText,
   DialogActions,
   Button,
-  Alert,
   Stack,
 } from "@mui/material";
 import { CreateFolderDialog } from "./components/CreateFolderDialog";
 import { UploadFilesDialog } from "./components/UploadFilesDialog";
 import { GridSortModel } from "@mui/x-data-grid";
-import {
-  getFolderContents,
-  getFolderPath,
-  deleteFile,
-  Item,
-  PaginationParams,
-} from "@/services/api";
+import { Item, PaginationParams } from "@/services/api";
 import { PageHeader } from "./components/PageHeader";
 import { ActionButtons } from "./components/ActionButtons";
 import { SearchBar } from "./components/SearchBar";
@@ -29,16 +22,18 @@ import { BreadCrumb } from "./components/BreadCrumb";
 import { DocumentTable } from "./components/DocumentTable";
 import { ErrorSnackbar } from "./components/ErrorSnackbar";
 import { PaginationState, SortingState } from "./types";
+import {
+  useGetFolderContents,
+  useGetFolderPath,
+  useDeleteFile,
+} from "@/hooks/useDocuments";
 
 interface DocumentListProps {
   folderId?: string;
 }
 
 export const DocumentList = ({ folderId }: DocumentListProps) => {
-  // State
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Local state
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
     page: 1,
@@ -54,7 +49,6 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(
     folderId,
   );
-  const [folderPath, setFolderPath] = useState<Item[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [notImplementedDialog, setNotImplementedDialog] = useState({
@@ -69,64 +63,39 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     item: null,
   });
 
-  // Fetch folder path when current folder changes
+  // Query params
+  const params: PaginationParams = {
+    page: pagination.page,
+    limit: pagination.limit,
+    sortField: sorting.field,
+    sortOrder: sorting.order,
+    search: searchTerm || undefined,
+  };
+
+  // React Query hooks
+  const {
+    data: folderContents,
+    isLoading,
+    error: queryError,
+  } = useGetFolderContents(currentFolderId, params);
+
+  const { data: folderPath = [] } = useGetFolderPath(
+    currentFolderId ? currentFolderId : "0",
+  );
+
+  // Update pagination when data changes
   useEffect(() => {
-    const fetchFolderPath = async () => {
-      if (!currentFolderId) {
-        setFolderPath([]);
-        return;
-      }
+    if (folderContents?.pagination) {
+      setPagination(folderContents.pagination);
+    }
+  }, [folderContents?.pagination]);
 
-      const response = await getFolderPath(currentFolderId);
-      if (!response.error) {
-        setFolderPath(response.data);
-      }
-    };
-
-    fetchFolderPath();
+  // Reset pagination when folder changes
+  useEffect(() => {
+    setPagination((prev: PaginationState) => ({ ...prev, page: 1 }));
   }, [currentFolderId]);
 
-  // Fetch data
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    const params: PaginationParams = {
-      page: pagination.page,
-      limit: pagination.limit,
-      sortField: sorting.field,
-      sortOrder: sorting.order,
-      search: searchTerm || undefined,
-    };
-
-    try {
-      const response = await getFolderContents(currentFolderId, params);
-
-      if (response.error) {
-        setError(response.error);
-      } else {
-        setItems(response.data.items || []);
-        setPagination(
-          response.data.pagination || {
-            page: 1,
-            limit: 10,
-            totalItems: 0,
-            totalPages: 0,
-          },
-        );
-      }
-    } catch (err) {
-      setError("Failed to fetch data. Please try again.");
-      console.error("Error fetching data:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentFolderId, pagination.page, pagination.limit, sorting, searchTerm]);
-
-  // Initial data fetch
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  const { mutate: deleteFileMutation } = useDeleteFile();
 
   // Update current folder when prop changes
   useEffect(() => {
@@ -136,7 +105,6 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   // Event handlers
   const handleBackToRoot = () => {
     setCurrentFolderId(undefined);
-    setFolderPath([]);
     setPagination((prev: PaginationState) => ({ ...prev, page: 1 }));
     setSelectedItems([]);
   };
@@ -152,7 +120,7 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   };
 
   const handleUploadSuccess = () => {
-    fetchData();
+    setIsUploadDialogOpen(false);
   };
 
   const handleAddFolder = () => {
@@ -160,7 +128,7 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   };
 
   const handleCreateSuccess = () => {
-    fetchData();
+    setIsCreateDialogOpen(false);
   };
 
   const handleSearch = (value: string) => {
@@ -199,9 +167,8 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
 
   const handleRowClick = (item: Item) => {
     if (item.itemType === "folder") {
-      setCurrentFolderId(item.id.toString());
-      setPagination((prev: PaginationState) => ({ ...prev, page: 1 }));
       setSelectedItems([]);
+      setCurrentFolderId(item.id.toString());
     }
   };
 
@@ -213,16 +180,20 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     setDeleteDialog({ open: true, item });
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!deleteDialog.item) return;
 
-    const response = await deleteFile(deleteDialog.item.id);
-    if (response.error) {
-      setError(response.error);
-    } else {
-      fetchData();
-    }
-    setDeleteDialog({ open: false, item: null });
+    deleteFileMutation(
+      { fileId: deleteDialog.item.id, folderId: currentFolderId },
+      {
+        onSuccess: () => {
+          setDeleteDialog({ open: false, item: null });
+        },
+        onError: (error: unknown) => {
+          console.error("Error deleting file:", error);
+        },
+      },
+    );
   };
 
   const handleCancelDelete = () => {
@@ -243,7 +214,12 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <ErrorSnackbar error={error} onClose={() => setError(null)} />
+      <ErrorSnackbar
+        error={queryError?.message || null}
+        onClose={() => {
+          /* Error handling managed by React Query */
+        }}
+      />
 
       <PageHeader>
         <ActionButtons
@@ -281,8 +257,8 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
       />
 
       <DocumentTable
-        items={items}
-        loading={loading}
+        items={folderContents?.items || []}
+        loading={isLoading}
         pagination={pagination}
         sorting={sorting}
         selectedItems={selectedItems}

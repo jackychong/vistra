@@ -85,11 +85,11 @@ router.delete("/:id", async (req: Request, res: Response) => {
     console.error("Error deleting file:", error);
     if (error instanceof Error && error.message.includes("not found")) {
       res.status(404).json({
-        error: "File not found"
+        error: "File not found",
       });
     } else {
       res.status(500).json({
-        error: "Failed to delete file"
+        error: "Failed to delete file",
       });
     }
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, DragEvent, ReactNode, ChangeEvent } from "react";
+import { useState, DragEvent, ChangeEvent } from "react";
 import {
   Box,
   Button,
@@ -10,15 +10,25 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { Dialog, DialogProps } from "@/components/core/Dialog";
+import { Dialog } from "@/components/core/Dialog";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { uploadFiles, formatFileSize } from "@/services/api";
+import { formatFileSize } from "@/services/api";
+import { useUploadFiles } from "@/hooks/useDocuments";
 
 interface UploadFilesDialogProps {
   open: boolean;
   onClose: () => void;
   parentId?: number;
   onSuccess: () => void;
+}
+
+interface UploadResult {
+  result: {
+    data: {
+      success: Array<unknown>;
+      errors: Array<{ name: string; error: string }>;
+    };
+  };
 }
 
 const DropZone = styled(Box)(({ theme }: { theme: Theme }) => ({
@@ -48,40 +58,44 @@ export const UploadFilesDialog = ({
 }: UploadFilesDialogProps) => {
   const [files, setFiles] = useState<Array<File>>([]);
   const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [errors, setErrors] = useState<{ name: string; error: string }[]>([]);
+  const [errors, setErrors] = useState<Array<{ name: string; error: string }>>(
+    [],
+  );
   const [successCount, setSuccessCount] = useState(0);
 
-  const handleDragEnter = (e: DragEvent) => {
+  const { mutate: uploadFilesMutation, isPending: isUploading } =
+    useUploadFiles();
+
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e: DragEvent) => {
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
 
-  const handleDragOver = (e: DragEvent) => {
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDrop = (e: DragEvent) => {
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
 
     const droppedFiles = Array.from(e.dataTransfer.files);
-    setFiles((prevFiles: Array<File>) => [...prevFiles, ...droppedFiles]);
+    setFiles((prevFiles: File[]) => [...prevFiles, ...droppedFiles]);
   };
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setFiles((prevFiles: Array<File>) => [...prevFiles, ...selectedFiles]);
+      setFiles((prevFiles: File[]) => [...prevFiles, ...selectedFiles]);
     }
   };
 
@@ -92,39 +106,41 @@ export const UploadFilesDialog = ({
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = () => {
     if (files.length === 0) return;
 
-    setIsUploading(true);
     setErrors([]);
     setSuccessCount(0);
 
-    try {
-      const response = await uploadFiles(files, parentId);
+    uploadFilesMutation(
+      { files, folderId: parentId },
+      {
+        onSuccess: ({ result }: UploadResult) => {
+          setSuccessCount(result.data.success.length);
+          setErrors(result.data.errors);
 
-      if (response.error) {
-        setErrors([{ name: "Upload", error: response.error }]);
-      } else {
-        setSuccessCount(response.data.success.length);
-        setErrors(response.data.errors);
+          if (result.data.success.length > 0) {
+            onSuccess();
+          }
 
-        if (response.data.success.length > 0) {
-          onSuccess();
-        }
-
-        // Only close if all files were uploaded successfully
-        if (response.data.errors.length === 0) {
-          handleClose();
-          onClose();
-        }
-      }
-    } catch (err) {
-      setErrors([
-        { name: "Upload", error: "Failed to upload files. Please try again." },
-      ]);
-    } finally {
-      setIsUploading(false);
-    }
+          // Only close if all files were uploaded successfully
+          if (result.data.errors.length === 0) {
+            handleClose();
+          }
+        },
+        onError: (error: unknown) => {
+          setErrors([
+            {
+              name: "Upload",
+              error:
+                error instanceof Error
+                  ? error.message
+                  : "Failed to upload files",
+            },
+          ]);
+        },
+      },
+    );
   };
 
   const handleClose = () => {
@@ -196,7 +212,7 @@ export const UploadFilesDialog = ({
         </Alert>
       )}
 
-      {errors.map((error, index) => (
+      {errors.map((error: { name: string; error: string }, index: number) => (
         <Alert key={index} severity="error" sx={{ mt: 2 }}>
           {error.name === "Upload"
             ? error.error

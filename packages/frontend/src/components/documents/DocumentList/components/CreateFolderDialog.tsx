@@ -4,7 +4,7 @@ import { useState, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@mui/material";
 import { Dialog, DialogProps } from "@/components/core/Dialog";
 import { TextField } from "@/components/core/TextField";
-import { createFolder } from "@/services/api";
+import { useCreateFolder } from "@/hooks/useDocuments";
 
 interface CreateFolderDialogProps
   extends Omit<DialogProps, "onClose" | "title" | "actions"> {
@@ -22,33 +22,38 @@ export const CreateFolderDialog = ({
 }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState("");
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {
+  const { mutate: createFolder, isPending } = useCreateFolder();
+
+  const handleSubmit = () => {
     // Validate empty folder name
     if (!folderName.trim()) {
       setError("Folder name is required");
       return;
     }
 
-    setIsSubmitting(true);
     setError("");
 
-    try {
-      const response = await createFolder(folderName.trim(), parentId);
-
-      if (response.error) {
-        setError(response.error);
-      } else {
-        setFolderName("");
-        onSuccess();
-        onClose();
-      }
-    } catch (err) {
-      setError("Failed to create folder");
-    } finally {
-      setIsSubmitting(false);
-    }
+    createFolder(
+      { name: folderName.trim(), parentId },
+      {
+        onSuccess: () => {
+          setFolderName("");
+          onSuccess();
+          onClose();
+        },
+        onError: (error: any) => {
+          // Handle API error response
+          if (error.response?.data?.error) {
+            setError(error.response.data.error);
+          } else if (error instanceof Error) {
+            setError(error.message);
+          } else {
+            setError("Failed to create folder");
+          }
+        },
+      },
+    );
   };
 
   const handleClose = () => {
@@ -70,7 +75,7 @@ export const CreateFolderDialog = ({
           <Button
             onClick={handleSubmit}
             variant="contained"
-            disabled={isSubmitting}
+            disabled={isPending}
           >
             Save
           </Button>
@@ -88,9 +93,9 @@ export const CreateFolderDialog = ({
         }}
         error={!!error}
         helperText={error}
-        disabled={isSubmitting}
+        disabled={isPending}
         onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-          if (e.key === "Enter" && !isSubmitting) {
+          if (e.key === "Enter" && !isPending) {
             handleSubmit();
           }
         }}

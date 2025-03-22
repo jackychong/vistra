@@ -14,16 +14,6 @@ import { Folder } from "./Folder.js";
   tableName: "files",
   timestamps: true,
   paranoid: true,
-  indexes: [
-    {
-      unique: true,
-      fields: ["name", "folderId"],
-      name: "unique_file_name_in_folder",
-      where: {
-        deletedAt: null,
-      },
-    },
-  ],
 })
 @Index("unique_file_name_in_folder")
 export class File extends Model<File> {
@@ -99,13 +89,17 @@ export class File extends Model<File> {
 
   // Custom validation method
   async uniqueNameInFolder() {
+    // Check for existing active file with same name in folder
     const existingFile = await File.findOne({
       where: {
         name: this.name,
         folderId: this.folderId,
         id: { [Op.ne]: this.id },
+        deletedAt: null,
       },
+      paranoid: false, // Include soft-deleted records in search
     });
+
     if (existingFile) {
       throw new Error("A file with this name already exists in this folder");
     }
