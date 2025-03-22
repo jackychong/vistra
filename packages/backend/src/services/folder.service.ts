@@ -64,12 +64,27 @@ export class FolderService {
    * @param parentId - Optional parent folder ID
    * @param userId - ID of the user creating the folder
    */
+  /**
+   * Validate folder name
+   */
+  static validateFolderName(name: string): { isValid: boolean; error?: string } {
+    if (!name?.trim()) {
+      return { isValid: false, error: "Folder name is required" };
+    }
+    return { isValid: true };
+  }
+
   static async createFolder(
     name: string,
     userId: number,
     parentId?: number,
   ): Promise<Item> {
-    console.log('Creating folder with params:', { name, userId, parentId });
+    // Validate folder name
+    const validation = this.validateFolderName(name);
+    if (!validation.isValid) {
+      throw new Error(validation.error);
+    }
+
     const folder = await (Folder as FolderModel).create({
       name,
       parentId,
@@ -111,7 +126,16 @@ export class FolderService {
    * Get the path to a folder (including the folder itself)
    * @param folderId - The folder ID to get path for
    */
-  static async getFolderPath(folderId: string): Promise<Item[]> {
+  static async getFolderPath(folderId: string | undefined): Promise<Item[]> {
+    if (!folderId) {
+      throw new Error("Folder ID is required");
+    }
+
+    const id = parseInt(folderId);
+    if (isNaN(id)) {
+      throw new Error("Invalid folder ID");
+    }
+
     const query = `
       WITH RECURSIVE folder_path AS (
         -- Base case: start with the target folder

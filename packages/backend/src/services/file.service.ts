@@ -5,42 +5,69 @@ interface CreateFileParams {
   name: string;
   mimeType: string;
   size: number;
-  folderId: number | null;
-  createdById: number;
+  folderId?: number | null;
+  userId?: number;
+}
+
+interface FileValidationResult {
+  success: File[];
+  errors: Array<{ name: string; error: string }>;
 }
 
 export class FileService {
   /**
+   * Validate file records before creation
+   */
+  static validateFiles(files: any[]): {
+    validFiles: CreateFileParams[];
+    errors: Array<{ name: string; error: string }>;
+  } {
+    const errors: Array<{ name: string; error: string }> = [];
+    const validFiles = files.filter((file) => {
+      if (!file.name || !file.mimeType || typeof file.size !== "number") {
+        errors.push({
+          name: file.name || "Unknown file",
+          error: "Each file must have name, mimeType, and size",
+        });
+        return false;
+      }
+      return true;
+    });
+
+    return { validFiles, errors };
+  }
+
+  /**
    * Create multiple file records
    */
-  static async createFiles(files: CreateFileParams[]): Promise<{
-    success: File[];
-    errors: { name: string; error: string }[];
-  }> {
-    const results = {
-      success: [] as File[],
-      errors: [] as { name: string; error: string }[]
+  static async createFiles(files: any[]): Promise<FileValidationResult> {
+    // First validate all files
+    const { validFiles, errors } = this.validateFiles(files);
+
+    if (validFiles.length === 0) {
+      return { success: [], errors };
+    }
+
+    const results: FileValidationResult = {
+      success: [],
+      errors: [...errors] // Include validation errors
     };
 
-    // Process each file individually
-    for (const file of files) {
+    // Process each valid file
+    for (const file of validFiles) {
       try {
-        const [createdFile] = await File.bulkCreate(
-          [{
-            name: file.name,
-            mimeType: file.mimeType,
-            size: file.size,
-            folderId: file.folderId,
-            createdById: 1, // TODO: Get from auth
-          }],
-          {
-            validate: true,
-            individualHooks: true
-          }
-        );
+        // Create single file
+        const createdFile = await (File as any).create({
+          name: file.name,
+          mimeType: file.mimeType,
+          size: file.size,
+          folderId: file.folderId || null,
+          createdById: file.userId || 1, // Default to 1 if not provided
+        });
 
         // Fetch file with user data
-        const fileWithUser = await File.findByPk(createdFile.id, {
+        const fileWithUser = await (File as any).findOne({
+          where: { id: createdFile.id },
           include: [
             {
               model: User,
@@ -74,7 +101,8 @@ export class FileService {
    */
   static async getFileById(id: number): Promise<File | null> {
     try {
-      const file = await File.findByPk(id, {
+      const file = await (File as any).findOne({
+        where: { id },
         include: [
           {
             model: User,
@@ -96,7 +124,7 @@ export class FileService {
    */
   static async deleteFile(id: number): Promise<void> {
     try {
-      const file = await File.findByPk(id);
+      const file = await (File as any).findOne({ where: { id } });
       if (!file) {
         throw new Error("File not found");
       }
@@ -104,6 +132,34 @@ export class FileService {
     } catch (error) {
       console.error("Error deleting file:", error);
       throw new Error("Failed to delete file");
+    }
+  }
+
+  /**
+   * Update file name
+   */
+  static async updateFileName(id: number, name: string): Promise<File> {
+    try {
+      const file = await (File as any).findOne({
+        where: { id },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "name"],
+          },
+        ],
+      });
+      
+      if (!file) {
+        throw new Error("File not found");
+      }
+
+      await file.update({ name });
+      return file;
+    } catch (error) {
+      console.error("Error updating file name:", error);
+      throw new Error("Failed to update file name");
     }
   }
 }

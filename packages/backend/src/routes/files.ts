@@ -21,38 +21,8 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
-    // Validate required fields
-    const errors: Array<{name: string, error: string}> = [];
-    const validFiles = files.filter(file => {
-      if (!file.name || !file.mimeType || typeof file.size !== "number") {
-        errors.push({
-          name: file.name || "Unknown file",
-          error: "Each file must have name, mimeType, and size"
-        });
-        return false;
-      }
-      return true;
-    });
-
-    if (validFiles.length === 0) {
-      return res.status(400).json({
-        success: [],
-        errors
-      });
-    }
-
-    // Add userId to each file record
-    const filesWithUser = validFiles.map((file) => ({
-      ...file,
-      userId: 1, // TODO: Get from auth
-    }));
-
-    const createdFiles = await FileService.createFiles(filesWithUser);
-
-    res.json({
-      success: createdFiles,
-      errors
-    });
+    const result = await FileService.createFiles(files);
+    res.json(result);
   } catch (error) {
     console.error("Error creating files:", error);
     res.status(500).json({
@@ -70,8 +40,14 @@ router.post("/", async (req: Request, res: Response) => {
  */
 router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const file = await FileService.getFileById(parseInt(req.params.id));
+    const fileId = parseInt(req.params.id);
+    if (isNaN(fileId)) {
+      return res.status(400).json({
+        error: "Invalid file ID",
+      });
+    }
 
+    const file = await FileService.getFileById(fileId);
     if (!file) {
       return res.status(404).json({
         error: "File not found",
@@ -96,7 +72,14 @@ router.get("/:id", async (req: Request, res: Response) => {
  */
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
-    await FileService.deleteFile(parseInt(req.params.id));
+    const fileId = parseInt(req.params.id);
+    if (isNaN(fileId)) {
+      return res.status(400).json({
+        error: "Invalid file ID",
+      });
+    }
+
+    await FileService.deleteFile(fileId);
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting file:", error);
@@ -107,6 +90,46 @@ router.delete("/:id", async (req: Request, res: Response) => {
     } else {
       res.status(500).json({
         error: "Failed to delete file"
+      });
+    }
+  }
+});
+
+/**
+ * PATCH /api/files/:id
+ * Update file name
+ * @body {name: string}
+ * @returns {200} Updated file object
+ * @returns {404} File not found
+ * @returns {500} Server error
+ */
+router.patch("/:id", async (req: Request, res: Response) => {
+  try {
+    const fileId = parseInt(req.params.id);
+    if (isNaN(fileId)) {
+      return res.status(400).json({
+        error: "Invalid file ID",
+      });
+    }
+
+    const { name } = req.body;
+    if (!name || typeof name !== "string") {
+      return res.status(400).json({
+        error: "Name is required and must be a string",
+      });
+    }
+
+    const file = await FileService.updateFileName(fileId, name);
+    res.json(file);
+  } catch (error) {
+    console.error("Error updating file:", error);
+    if (error instanceof Error && error.message.includes("not found")) {
+      res.status(404).json({
+        error: "File not found"
+      });
+    } else {
+      res.status(500).json({
+        error: "Failed to update file"
       });
     }
   }

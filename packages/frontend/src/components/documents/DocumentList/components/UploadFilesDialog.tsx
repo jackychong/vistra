@@ -114,7 +114,7 @@ export const UploadFilesDialog = ({
 
         // Only close if all files were uploaded successfully
         if (response.data.errors.length === 0) {
-          setFiles([]);
+          handleClose();
           onClose();
         }
       }

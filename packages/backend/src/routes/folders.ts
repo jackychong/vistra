@@ -27,6 +27,11 @@ router.get("/:id/path", async (req: Request, res: Response) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching folder path:", error);
+    if (error instanceof Error) {
+      if (error.message === "Folder ID is required" || error.message === "Invalid folder ID") {
+        return res.status(400).json({ error: error.message });
+      }
+    }
     res.status(500).json({ error: "Failed to fetch folder path" });
   }
 });
@@ -42,21 +47,15 @@ router.get("/:id/path", async (req: Request, res: Response) => {
 router.post("/", async (req: CreateFolderRequest, res: Response) => {
   try {
     const { name, parentId } = req.body;
-
-    if (!name?.trim()) {
-      return res.status(400).json({ error: "Folder name is required" });
-    }
-
-    // TODO: Get user ID from auth middleware
-    const userId = 1; // Using test user for now
+    const userId = 1; // TODO: Get from auth middleware
 
     const folder = await FolderService.createFolder(name, userId, parentId);
     res.status(201).json(folder);
   } catch (error) {
     console.error("Error creating folder:", error);
     if (error instanceof Error) {
-      // Handle validation errors
       if (
+        error.message === "Folder name is required" ||
         error.message.includes("Validation error") ||
         error.message.includes("already exists") ||
         error.message.includes("cannot be empty") ||
