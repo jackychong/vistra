@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, LinearProgress, IconButton, Paper, Stack, Typography, MenuItem, Menu } from "@mui/material";
+import { Box, IconButton, Paper, Stack, Typography, MenuItem, Menu } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   MoreVert as MoreVertIcon,
@@ -201,12 +201,6 @@ export const DocumentTable = ({
 
   return (
     <Paper sx={{ borderRadius: 2, overflow: "hidden", mb: 2, height: 500 }}>
-      {loading && (
-        <Box sx={{ width: "100%", position: "absolute", top: 0, zIndex: 1 }}>
-          <LinearProgress />
-        </Box>
-      )}
-
       <DataGrid
         rows={items}
         columns={columns}

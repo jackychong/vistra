@@ -5,7 +5,6 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  CircularProgress,
 } from "@mui/material";
 import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { SearchBarProps } from "../types";
@@ -15,7 +14,6 @@ import debounce from "lodash/debounce";
 export const SearchBar = ({
   value,
   onChange,
-  loading = false,
 }: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState(value);
 
@@ -60,9 +58,7 @@ export const SearchBar = ({
           ),
           endAdornment: (
             <InputAdornment position="end">
-              {loading ? (
-                <CircularProgress size={20} />
-              ) : searchTerm ? (
+              {searchTerm ? (
                 <IconButton
                   aria-label="clear search"
                   onClick={handleClear}
@@ -84,7 +80,6 @@ export const SearchBar = ({
             },
           },
         }}
-        disabled={loading}
       />
     </Box>
   );

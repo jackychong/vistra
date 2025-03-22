@@ -246,7 +246,7 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
         />
       </PageHeader>
 
-      <SearchBar value={searchTerm} onChange={handleSearch} loading={loading} />
+      <SearchBar value={searchTerm} onChange={handleSearch} />
 
       <CreateFolderDialog
         open={isCreateDialogOpen}
