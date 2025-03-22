@@ -13,37 +13,60 @@ export class FileService {
   /**
    * Create multiple file records
    */
-  static async createFiles(files: CreateFileParams[]): Promise<File[]> {
-    try {
-      const createdFiles = await File.bulkCreate(
-        files.map((file: CreateFileParams) => ({
-          name: file.name,
-          mimeType: file.mimeType,
-          size: file.size,
-          folderId: file.folderId,
-          createdById: 1, // TODO: Get from auth
-        })),
-      );
+  static async createFiles(files: CreateFileParams[]): Promise<{
+    success: File[];
+    errors: { name: string; error: string }[];
+  }> {
+    const results = {
+      success: [] as File[],
+      errors: [] as { name: string; error: string }[]
+    };
 
-      // Fetch files with user data
-      const filesWithUser = await File.findAll({
-        where: {
-          id: createdFiles.map((file: File) => file.id),
-        },
-        include: [
+    // Process each file individually
+    for (const file of files) {
+      try {
+        const [createdFile] = await File.bulkCreate(
+          [{
+            name: file.name,
+            mimeType: file.mimeType,
+            size: file.size,
+            folderId: file.folderId,
+            createdById: 1, // TODO: Get from auth
+          }],
           {
-            model: User,
-            as: "user",
-            attributes: ["id", "name"],
-          },
-        ],
-      });
+            validate: true,
+            individualHooks: true
+          }
+        );
 
-      return filesWithUser;
-    } catch (error) {
-      console.error("Error creating files:", error);
-      throw new Error("Failed to create files");
+        // Fetch file with user data
+        const fileWithUser = await File.findByPk(createdFile.id, {
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "name"],
+            },
+          ],
+        });
+
+        if (fileWithUser) {
+          results.success.push(fileWithUser);
+        }
+      } catch (error: any) {
+        console.error(`Error creating file ${file.name}:`, error);
+        const errorMessage = error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError'
+          ? error.errors[0].message
+          : "Failed to create file";
+        
+        results.errors.push({
+          name: file.name,
+          error: errorMessage
+        });
+      }
     }
+
+    return results;
   }
 
   /**

@@ -38,6 +38,9 @@ export class File extends Model<File> {
         args: [1, 255],
         msg: "File name must be between 1 and 255 characters",
       },
+      isUnique: async function(this: File) {
+        await this.uniqueNameInFolder();
+      }
     },
   })
   declare name: string;

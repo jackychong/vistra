@@ -8,6 +8,7 @@ import {
   styled,
   Theme,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import { Dialog, DialogProps } from "@/components/core/Dialog";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -16,7 +17,7 @@ import { uploadFiles, formatFileSize } from "@/services/api";
 interface UploadFilesDialogProps {
   open: boolean;
   onClose: () => void;
-  folderId?: number;
+  parentId?: number;
   onSuccess: () => void;
 }
 
@@ -42,13 +43,14 @@ const DropZone = styled(Box)(({ theme }: { theme: Theme }) => ({
 export const UploadFilesDialog = ({
   open,
   onClose,
-  folderId,
+  parentId,
   onSuccess,
 }: UploadFilesDialogProps) => {
   const [files, setFiles] = useState<Array<File>>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ name: string; error: string }[]>([]);
+  const [successCount, setSuccessCount] = useState(0);
 
   const handleDragEnter = (e: DragEvent) => {
     e.preventDefault();
@@ -94,20 +96,30 @@ export const UploadFilesDialog = ({
     if (files.length === 0) return;
 
     setIsUploading(true);
-    setError(null);
+    setErrors([]);
+    setSuccessCount(0);
 
     try {
-      const response = await uploadFiles(files, folderId);
+      const response = await uploadFiles(files, parentId);
 
       if (response.error) {
-        setError(response.error);
+        setErrors([{ name: "Upload", error: response.error }]);
       } else {
-        setFiles([]);
-        onSuccess();
-        onClose();
+        setSuccessCount(response.data.success.length);
+        setErrors(response.data.errors);
+        
+        if (response.data.success.length > 0) {
+          onSuccess();
+        }
+
+        // Only close if all files were uploaded successfully
+        if (response.data.errors.length === 0) {
+          setFiles([]);
+          onClose();
+        }
       }
     } catch (err) {
-      setError("Failed to upload files. Please try again.");
+      setErrors([{ name: "Upload", error: "Failed to upload files. Please try again." }]);
     } finally {
       setIsUploading(false);
     }
@@ -115,7 +127,8 @@ export const UploadFilesDialog = ({
 
   const handleClose = () => {
     setFiles([]);
-    setError(null);
+    setErrors([]);
+    setSuccessCount(0);
     onClose();
   };
 
@@ -173,11 +186,19 @@ export const UploadFilesDialog = ({
             : "or click to select files"}
         </Typography>
       </DropZone>
-      {error && (
-        <Typography color="error" variant="body2" sx={{ mt: 2 }}>
-          {error}
-        </Typography>
+
+      {successCount > 0 && (
+        <Alert severity="success" sx={{ mt: 2 }}>
+          Successfully uploaded {successCount} file{successCount === 1 ? "" : "s"}
+        </Alert>
       )}
+
+      {errors.map((error, index) => (
+        <Alert key={index} severity="error" sx={{ mt: 2 }}>
+          {error.name === "Upload" ? error.error : `${error.name}: ${error.error}`}
+        </Alert>
+      ))}
+
       {files.length > 0 && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="subtitle2" color="textSecondary" gutterBottom>

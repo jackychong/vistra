@@ -153,7 +153,7 @@ export const createFolder = async (
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, parentId }),
+      body: JSON.stringify({ name, folderId }),
     });
 
     if (!response.ok) {
@@ -181,10 +181,15 @@ export const createFolder = async (
  * @param files - Array of files to create records for
  * @param folderId - Optional parent folder ID
  */
+export interface UploadResult {
+  success: Item[];
+  errors: { name: string; error: string }[];
+}
+
 export const uploadFiles = async (
   files: File[],
   folderId?: number,
-): Promise<ApiResponse<Item[]>> => {
+): Promise<ApiResponse<UploadResult>> => {
   try {
     const fileRecords = files.map((file) => ({
       name: file.name,
@@ -204,7 +209,7 @@ export const uploadFiles = async (
     if (!response.ok) {
       const errorData = await response.json();
       return {
-        data: [],
+        data: { success: [], errors: [] },
         error: errorData.error || "Failed to create files",
       };
     }
@@ -214,7 +219,7 @@ export const uploadFiles = async (
   } catch (error) {
     console.error("Error uploading files:", error);
     return {
-      data: [],
+      data: { success: [], errors: [] },
       error:
         error instanceof Error ? error.message : "An unknown error occurred",
     };
