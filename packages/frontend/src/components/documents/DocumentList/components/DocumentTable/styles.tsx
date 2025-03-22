@@ -26,8 +26,13 @@ export const StyledSelect = styled(Select)(({ theme }: { theme: Theme }) => ({
   },
 }));
 
-export const StyledPaginationItem = styled(Pagination)({
+export const StyledPaginationItem = styled(Pagination)(({ theme }: { theme: Theme }) => ({
   "& .MuiPaginationItem-root": {
     margin: "0 4px",
   },
-});
+  "& .Mui-selected": {
+    backgroundColor: "transparent !important",
+    color: "#0909b7",
+    fontWeight: "bold",
+  },
+}));
