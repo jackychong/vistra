@@ -1,6 +1,7 @@
 "use client";
 
 import { Breadcrumbs, Button, Link, Stack, Typography } from "@mui/material";
+import { Home as HomeIcon } from "@mui/icons-material";
 import { PageHeaderProps } from "../types";
 
 export const PageHeader = ({
@@ -24,19 +25,19 @@ export const PageHeader = ({
         <Breadcrumbs aria-label="folder navigation">
           <Link
             component="button"
-            variant="body1"
+            variant="body2"
             onClick={onBackToRoot}
             underline="hover"
             color="inherit"
-            sx={{ cursor: "pointer" }}
+            sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}
           >
-            Root
+            <HomeIcon sx={{ fontSize: 24, lineHeight: 0 }} />
           </Link>
           {folderPath.map((folder, index) => (
             <Link
               key={folder.id}
               component="button"
-              variant="body1"
+              variant="body2"
               onClick={() => onFolderClick(folder.id)}
               underline="hover"
               color={
