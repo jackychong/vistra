@@ -1,71 +1,21 @@
-"use client";
-
-import { DocumentTableProps } from "../types";
-import { formatFileSize, Item } from "@/services/api";
-import {
-  Box,
-  LinearProgress,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-  Select,
-  MenuItem,
-  Pagination,
-} from "@mui/material";
-import { styled, Theme } from "@mui/material/styles";
+import React, { useState } from "react";
+import { Box, LinearProgress, IconButton, Paper, Stack, Typography, MenuItem, Menu } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   MoreVert as MoreVertIcon,
   Folder as FolderIcon,
   InsertDriveFile as FileIcon,
 } from "@mui/icons-material";
+import { formatFileSize, Item } from "@/services/api";
+import type { DocumentTableProps, CustomFooterProps } from "./Component";
+import {
+  StyledFooter,
+  StyledRowsPerPage,
+  StyledSelect,
+  StyledPaginationItem,
+} from "./styles";
 
-const StyledFooter = styled(Box)(({ theme }: { theme: Theme }) => ({
-  padding: "8px 16px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  borderTop: `1px solid ${theme.palette.divider}`,
-}));
-
-const StyledRowsPerPage = styled(Box)({
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-});
-
-const StyledSelect = styled(Select)(({ theme }: { theme: Theme }) => ({
-  minWidth: "70px",
-  height: "32px",
-  ".MuiOutlinedInput-notchedOutline": {
-    border: `1px solid ${theme.palette.divider}`,
-  },
-  "&.MuiInputBase-root": {
-    borderRadius: "4px",
-  },
-}));
-
-const StyledPaginationItem = styled(Pagination)({
-  "& .MuiPaginationItem-root": {
-    margin: "0 4px",
-  },
-});
-
-interface CustomFooterProps {
-  pagination: {
-    page: number;
-    limit: number;
-    totalItems: number;
-    totalPages: number;
-  };
-  onPaginationChange: (model: { page: number; pageSize: number }) => void;
-}
-
-const CustomFooter = ({
-  pagination,
-  onPaginationChange,
-}: CustomFooterProps) => {
+const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => {
   const handlePageSizeChange = (event: any) => {
     onPaginationChange({
       page: 0,
@@ -119,9 +69,47 @@ export const DocumentTable = ({
   onSortChange,
   onSelectionChange,
   onRowClick: handleRowClick,
+  onDeleteItem,
+  onMoveItem,
+  onArchiveItem,
 }: DocumentTableProps) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, item: Item) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setSelectedItem(item);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedItem(null);
+  };
+
   const handleClick = (params: { row: Item }) => {
     handleRowClick(params.row);
+  };
+
+  const handleDelete = () => {
+    if (selectedItem && onDeleteItem) {
+      onDeleteItem(selectedItem);
+    }
+    handleMenuClose();
+  };
+
+  const handleMove = () => {
+    if (selectedItem && onMoveItem) {
+      onMoveItem(selectedItem);
+    }
+    handleMenuClose();
+  };
+
+  const handleArchive = () => {
+    if (selectedItem && onArchiveItem) {
+      onArchiveItem(selectedItem);
+    }
+    handleMenuClose();
   };
 
   const columns = [
@@ -130,6 +118,7 @@ export const DocumentTable = ({
       headerName: "Name",
       flex: 1,
       minWidth: 200,
+      sortable: true,
       renderCell: (params: any) => (
         <Stack direction="row" alignItems="center" spacing={1}>
           {params.row.itemType === "folder" ? (
@@ -145,12 +134,14 @@ export const DocumentTable = ({
       field: "user",
       headerName: "Created by",
       width: 150,
+      sortable: false,
       renderCell: (params: any) => params.row?.user?.name,
     },
     {
       field: "updatedAt",
       headerName: "Date",
       width: 150,
+      sortable: true,
       renderCell: (params: any) => {
         return new Date(params.value).toLocaleDateString("en-UK", {
           day: "2-digit",
@@ -163,6 +154,7 @@ export const DocumentTable = ({
       field: "size",
       headerName: "File size",
       width: 120,
+      sortable: false,
       valueFormatter: (params: any) => {
         return params?.row?.itemType === "file"
           ? formatFileSize(params.value)
@@ -174,10 +166,33 @@ export const DocumentTable = ({
       headerName: "",
       width: 70,
       sortable: false,
-      renderCell: () => (
-        <IconButton size="small">
-          <MoreVertIcon fontSize="small" />
-        </IconButton>
+      renderCell: (params: any) => (
+        <>
+          <IconButton 
+            size="small" 
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleMenuOpen(e, params.row)}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl) && selectedItem?.id === params.row.id}
+            onClose={handleMenuClose}
+            onClick={(e: React.MouseEvent<HTMLElement>) => e.stopPropagation()}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+            <MenuItem onClick={handleMove}>Move</MenuItem>
+            <MenuItem onClick={handleArchive}>Archive</MenuItem>
+          </Menu>
+        </>
       ),
     },
   ];
@@ -193,6 +208,9 @@ export const DocumentTable = ({
       <DataGrid
         rows={items}
         columns={columns}
+        disableColumnFilter
+        disableColumnSelector
+        disableColumnMenu
         initialState={{
           sorting: {
             sortModel: [
@@ -234,7 +252,7 @@ export const DocumentTable = ({
         components={{
           LoadingOverlay: () => null,
         }}
-        sx={(theme: Theme) => ({
+        sx={{
           position: "relative",
           border: "none",
           "& .MuiDataGrid-main": {
@@ -243,37 +261,8 @@ export const DocumentTable = ({
           "& .MuiDataGrid-virtualScroller": {
             opacity: loading ? 0.5 : 1,
             transition: "opacity 0.2s ease-in-out",
-            backgroundColor: theme.palette.background.default,
           },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-          },
-          "& .MuiDataGrid-columnHeaderTitle": {
-            fontWeight: "bold",
-          },
-          "& .folder-row": {
-            cursor: "pointer",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: `1px solid ${theme.palette.divider}`,
-            "&:focus-within": {
-              outline: "none",
-            },
-          },
-          "& .MuiDataGrid-row": {
-            "&:hover": {
-              backgroundColor: theme.palette.action.hover,
-            },
-          },
-          "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
-            outline: "none",
-          },
-          "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within":
-            {
-              outline: "none",
-            },
-        })}
+        }}
       />
     </Paper>
   );
