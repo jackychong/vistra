@@ -67,7 +67,10 @@ export class FolderService {
   /**
    * Validate folder name
    */
-  static validateFolderName(name: string): { isValid: boolean; error?: string } {
+  static validateFolderName(name: string): {
+    isValid: boolean;
+    error?: string;
+  } {
     if (!name?.trim()) {
       return { isValid: false, error: "Folder name is required" };
     }

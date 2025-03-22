@@ -21,14 +21,10 @@ export const ActionButtons = ({
     <Stack direction="row" spacing={2}>
       {isMobile ? (
         <>
-          <StyledMobileUploadButton
-            onClick={onUploadFiles}
-          >
+          <StyledMobileUploadButton onClick={onUploadFiles}>
             <UploadIcon />
           </StyledMobileUploadButton>
-          <StyledMobileAddButton
-            onClick={onAddFolder}
-          >
+          <StyledMobileAddButton onClick={onAddFolder}>
             <AddIcon />
           </StyledMobileAddButton>
         </>

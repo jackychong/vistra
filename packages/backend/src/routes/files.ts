@@ -95,44 +95,4 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
-/**
- * PATCH /api/files/:id
- * Update file name
- * @body {name: string}
- * @returns {200} Updated file object
- * @returns {404} File not found
- * @returns {500} Server error
- */
-router.patch("/:id", async (req: Request, res: Response) => {
-  try {
-    const fileId = parseInt(req.params.id);
-    if (isNaN(fileId)) {
-      return res.status(400).json({
-        error: "Invalid file ID",
-      });
-    }
-
-    const { name } = req.body;
-    if (!name || typeof name !== "string") {
-      return res.status(400).json({
-        error: "Name is required and must be a string",
-      });
-    }
-
-    const file = await FileService.updateFileName(fileId, name);
-    res.json(file);
-  } catch (error) {
-    console.error("Error updating file:", error);
-    if (error instanceof Error && error.message.includes("not found")) {
-      res.status(404).json({
-        error: "File not found"
-      });
-    } else {
-      res.status(500).json({
-        error: "Failed to update file"
-      });
-    }
-  }
-});
-
 export default router;

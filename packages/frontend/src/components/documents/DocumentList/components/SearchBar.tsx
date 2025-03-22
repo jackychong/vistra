@@ -1,20 +1,12 @@
 "use client";
 
-import {
-  Box,
-  TextField,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
+import { Box, TextField, InputAdornment, IconButton } from "@mui/material";
 import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { SearchBarProps } from "../types";
 import { useCallback, useEffect, useState } from "react";
 import debounce from "lodash/debounce";
 
-export const SearchBar = ({
-  value,
-  onChange,
-}: SearchBarProps) => {
+export const SearchBar = ({ value, onChange }: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState(value);
 
   // Debounce the onChange callback

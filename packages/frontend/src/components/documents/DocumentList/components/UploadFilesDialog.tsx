@@ -107,7 +107,7 @@ export const UploadFilesDialog = ({
       } else {
         setSuccessCount(response.data.success.length);
         setErrors(response.data.errors);
-        
+
         if (response.data.success.length > 0) {
           onSuccess();
         }
@@ -119,7 +119,9 @@ export const UploadFilesDialog = ({
         }
       }
     } catch (err) {
-      setErrors([{ name: "Upload", error: "Failed to upload files. Please try again." }]);
+      setErrors([
+        { name: "Upload", error: "Failed to upload files. Please try again." },
+      ]);
     } finally {
       setIsUploading(false);
     }
@@ -189,13 +191,16 @@ export const UploadFilesDialog = ({
 
       {successCount > 0 && (
         <Alert severity="success" sx={{ mt: 2 }}>
-          Successfully uploaded {successCount} file{successCount === 1 ? "" : "s"}
+          Successfully uploaded {successCount} file
+          {successCount === 1 ? "" : "s"}
         </Alert>
       )}
 
       {errors.map((error, index) => (
         <Alert key={index} severity="error" sx={{ mt: 2 }}>
-          {error.name === "Upload" ? error.error : `${error.name}: ${error.error}`}
+          {error.name === "Upload"
+            ? error.error
+            : `${error.name}: ${error.error}`}
         </Alert>
       ))}
 

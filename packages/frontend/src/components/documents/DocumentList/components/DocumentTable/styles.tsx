@@ -2,23 +2,25 @@ import { Box, Select, Pagination, Theme, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 
-export const StyledDataGrid = styled(DataGrid)(({ theme }: { theme: Theme }) => ({
-  position: "relative",
-  border: "none",
-  "& .MuiDataGrid-main": {
-    minHeight: "400px",
-  },
-  "& .MuiDataGrid-virtualScroller": {
-    opacity: ({ loading }: { loading: boolean }) => loading ? 0.5 : 1,
-    transition: "opacity 0.2s ease-in-out",
-  },
-  "& .MuiDataGrid-sortIcon": {
-    opacity: 1
-  },
-  "& .MuiDataGrid-columnHeader .MuiIconButton-root:hover": {
-    backgroundColor: "transparent"
-  },
-}));
+export const StyledDataGrid = styled(DataGrid)(
+  ({ theme }: { theme: Theme }) => ({
+    position: "relative",
+    border: "none",
+    "& .MuiDataGrid-main": {
+      minHeight: "400px",
+    },
+    "& .MuiDataGrid-virtualScroller": {
+      opacity: ({ loading }: { loading: boolean }) => (loading ? 0.5 : 1),
+      transition: "opacity 0.2s ease-in-out",
+    },
+    "& .MuiDataGrid-sortIcon": {
+      opacity: 1,
+    },
+    "& .MuiDataGrid-columnHeader .MuiIconButton-root:hover": {
+      backgroundColor: "transparent",
+    },
+  }),
+);
 
 export const StyledNameCell = styled(Box)({
   display: "flex",
@@ -27,7 +29,7 @@ export const StyledNameCell = styled(Box)({
   gap: "8px",
   width: "100%",
   overflow: "hidden",
-  height: "100%"
+  height: "100%",
 });
 
 export const StyledNameText = styled(Typography)({
@@ -36,7 +38,7 @@ export const StyledNameText = styled(Typography)({
   height: "100%",
   whiteSpace: "nowrap",
   overflow: "hidden",
-  textOverflow: "ellipsis"
+  textOverflow: "ellipsis",
 });
 
 export const StyledFooter = styled(Box)(({ theme }: { theme: Theme }) => ({
@@ -64,13 +66,15 @@ export const StyledSelect = styled(Select)(({ theme }: { theme: Theme }) => ({
   },
 }));
 
-export const StyledPaginationItem = styled(Pagination)(({ theme }: { theme: Theme }) => ({
-  "& .MuiPaginationItem-root": {
-    margin: "0 4px",
-  },
-  "& .Mui-selected": {
-    backgroundColor: "transparent !important",
-    color: "#0909b7",
-    fontWeight: "bold",
-  },
-}));
+export const StyledPaginationItem = styled(Pagination)(
+  ({ theme }: { theme: Theme }) => ({
+    "& .MuiPaginationItem-root": {
+      margin: "0 4px",
+    },
+    "& .Mui-selected": {
+      backgroundColor: "transparent !important",
+      color: "#0909b7",
+      fontWeight: "bold",
+    },
+  }),
+);

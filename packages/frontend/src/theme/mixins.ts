@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 import { colors } from "./palette";
 
 export const mixins = {
-MuiDataGrid: {
+  MuiDataGrid: {
     containerBackground: colors.spaceBlue,
-},
-}
+  },
+};

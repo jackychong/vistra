@@ -50,7 +50,7 @@ export class FileService {
 
     const results: FileValidationResult = {
       success: [],
-      errors: [...errors] // Include validation errors
+      errors: [...errors], // Include validation errors
     };
 
     // Process each valid file
@@ -82,13 +82,15 @@ export class FileService {
         }
       } catch (error: any) {
         console.error(`Error creating file ${file.name}:`, error);
-        const errorMessage = error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError'
-          ? error.errors[0].message
-          : "Failed to create file";
-        
+        const errorMessage =
+          error.name === "SequelizeValidationError" ||
+          error.name === "SequelizeUniqueConstraintError"
+            ? error.errors[0].message
+            : "Failed to create file";
+
         results.errors.push({
           name: file.name,
-          error: errorMessage
+          error: errorMessage,
         });
       }
     }
@@ -150,7 +152,7 @@ export class FileService {
           },
         ],
       });
-      
+
       if (!file) {
         throw new Error("File not found");
       }

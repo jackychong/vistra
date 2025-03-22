@@ -42,7 +42,9 @@ import { File } from "./File.js";
 
       const existingFolder = await Folder.findOne({ where });
       if (existingFolder) {
-        throw new Error("A folder with this name already exists in this location");
+        throw new Error(
+          "A folder with this name already exists in this location",
+        );
       }
     },
     async isValidParent(this: Folder) {
@@ -115,6 +117,4 @@ export class Folder extends Model<Folder> {
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
-
-
 }

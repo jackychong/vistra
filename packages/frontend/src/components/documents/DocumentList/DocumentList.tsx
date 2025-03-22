@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Alert, Stack } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Alert,
+  Stack,
+} from "@mui/material";
 import { CreateFolderDialog } from "./components/CreateFolderDialog";
 import { UploadFilesDialog } from "./components/UploadFilesDialog";
 import { GridSortModel } from "@mui/x-data-grid";
@@ -242,14 +252,13 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
         />
       </PageHeader>
 
-      <Stack 
-        direction={{ xs: "column", sm: "row" }} spacing={2} 
-        alignItems={{ xs: null, sm: "center" }} mb={3}
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2}
+        alignItems={{ xs: null, sm: "center" }}
+        mb={3}
       >
-        <SearchBar 
-          value={searchTerm} 
-          onChange={handleSearch}
-        />
+        <SearchBar value={searchTerm} onChange={handleSearch} />
         <BreadCrumb
           folderPath={folderPath}
           onBackToRoot={handleBackToRoot}
@@ -301,19 +310,21 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={deleteDialog.open}
-        onClose={handleCancelDelete}
-      >
+      <Dialog open={deleteDialog.open} onClose={handleCancelDelete}>
         <DialogTitle>Delete File</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete "{deleteDialog.item?.name}"? This action cannot be undone.
+            Are you sure you want to delete "{deleteDialog.item?.name}"? This
+            action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelDelete}>Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="error" variant="contained">
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+          >
             Delete
           </Button>
         </DialogActions>

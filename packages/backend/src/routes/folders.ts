@@ -28,7 +28,10 @@ router.get("/:id/path", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching folder path:", error);
     if (error instanceof Error) {
-      if (error.message === "Folder ID is required" || error.message === "Invalid folder ID") {
+      if (
+        error.message === "Folder ID is required" ||
+        error.message === "Invalid folder ID"
+      ) {
         return res.status(400).json({ error: error.message });
       }
     }

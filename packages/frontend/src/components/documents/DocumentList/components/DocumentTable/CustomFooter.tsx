@@ -1,4 +1,4 @@
-  import React from "react";
+import React from "react";
 import { Typography, MenuItem } from "@mui/material";
 import type { CustomFooterProps } from "./DocumentTable.d";
 import {
@@ -8,7 +8,10 @@ import {
   StyledPaginationItem,
 } from "./styles";
 
-export const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => {
+export const CustomFooter = ({
+  pagination,
+  onPaginationChange,
+}: CustomFooterProps) => {
   const handlePageSizeChange = (event: any) => {
     onPaginationChange({
       page: 0,

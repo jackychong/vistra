@@ -29,9 +29,10 @@ export const components: Components<Theme> = {
         "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
           outline: "none",
         },
-        "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within": {
-          outline: "none",
-        },
+        "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within":
+          {
+            outline: "none",
+          },
         "& .MuiDataGrid-columnHeaderTitleContainer": {
           color: "white",
           ".MuiSvgIcon-root": {
@@ -39,8 +40,8 @@ export const components: Components<Theme> = {
           },
         },
         "& .MuiDataGrid-columnSeparator": {
-          display: 'none'
-        } 
+          display: "none",
+        },
       }),
     },
   },

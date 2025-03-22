@@ -8,11 +8,7 @@ import {
 import { formatFileSize, Item } from "@/services/api";
 import type { DocumentTableProps } from "./DocumentTable.d";
 import { CustomFooter } from "./CustomFooter";
-import {
-  StyledDataGrid,
-  StyledNameCell,
-  StyledNameText,
-} from "./styles";
+import { StyledDataGrid, StyledNameCell, StyledNameText } from "./styles";
 
 export const DocumentTable = ({
   items,
@@ -31,7 +27,10 @@ export const DocumentTable = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, item: Item) => {
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    item: Item,
+  ) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedItem(item);
@@ -125,7 +124,9 @@ export const DocumentTable = ({
         <>
           <IconButton
             size="small"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleMenuOpen(e, params.row)}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+              handleMenuOpen(e, params.row)
+            }
           >
             <MoreVertIcon fontSize="small" />
           </IconButton>
@@ -135,12 +136,12 @@ export const DocumentTable = ({
             onClose={handleMenuClose}
             onClick={(e: React.MouseEvent<HTMLElement>) => e.stopPropagation()}
             anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
+              vertical: "bottom",
+              horizontal: "right",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
           >
             {selectedItem?.itemType === "file" && (
