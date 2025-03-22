@@ -1,8 +1,14 @@
 "use client";
 
-import { Button, Stack, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { Stack, useMediaQuery, useTheme } from "@mui/material";
 import { Upload as UploadIcon, Add as AddIcon } from "@mui/icons-material";
-import { ActionButtonsProps } from "../types";
+import { ActionButtonsProps } from "./ActionButtons.d";
+import {
+  StyledMobileUploadButton,
+  StyledMobileAddButton,
+  StyledDesktopUploadButton,
+  StyledDesktopAddButton,
+} from "./styles";
 
 export const ActionButtons = ({
   onUploadFiles,
@@ -15,41 +21,33 @@ export const ActionButtons = ({
     <Stack direction="row" spacing={2}>
       {isMobile ? (
         <>
-          <IconButton
-            color="primary"
+          <StyledMobileUploadButton
             onClick={onUploadFiles}
           >
             <UploadIcon />
-          </IconButton>
-          <IconButton
-            color="primary"
+          </StyledMobileUploadButton>
+          <StyledMobileAddButton
             onClick={onAddFolder}
-            sx={{
-              backgroundColor: "primary.main",
-              "&:hover": {
-                backgroundColor: "primary.dark",
-              },
-            }}
           >
-            <AddIcon sx={{ color: "common.white" }} />
-          </IconButton>
+            <AddIcon />
+          </StyledMobileAddButton>
         </>
       ) : (
         <>
-          <Button
+          <StyledDesktopUploadButton
             variant="outlined"
             startIcon={<UploadIcon />}
             onClick={onUploadFiles}
           >
             Upload files
-          </Button>
-          <Button
+          </StyledDesktopUploadButton>
+          <StyledDesktopAddButton
             variant="contained"
             startIcon={<AddIcon />}
             onClick={onAddFolder}
           >
             Add new folder
-          </Button>
+          </StyledDesktopAddButton>
         </>
       )}
     </Stack>
