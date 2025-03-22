@@ -252,7 +252,7 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
         open={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onSuccess={handleCreateSuccess}
-        folderId={currentFolderId ? parseInt(currentFolderId) : undefined}
+        parentId={currentFolderId ? parseInt(currentFolderId) : undefined}
       />
 
       <UploadFilesDialog

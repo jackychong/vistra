@@ -69,6 +69,7 @@ export class FolderService {
     userId: number,
     parentId?: number,
   ): Promise<Item> {
+    console.log('Creating folder with params:', { name, userId, parentId });
     const folder = await (Folder as FolderModel).create({
       name,
       parentId,

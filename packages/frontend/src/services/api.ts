@@ -153,7 +153,10 @@ export const createFolder = async (
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, folderId }),
+      body: JSON.stringify({ 
+        name, 
+        parentId: folderId ? Number(folderId) : undefined 
+      }),
     });
 
     if (!response.ok) {

@@ -25,6 +25,44 @@ import { File } from "./File.js";
       },
     },
   ],
+  validate: {
+    async uniqueNameInParent(this: Folder) {
+      const where = {
+        name: this.name,
+        id: { [Op.ne]: this.id || 0 },
+        deletedAt: null,
+      };
+
+      // For root level folders (parentId is null/undefined)
+      if (this.parentId === undefined || this.parentId === null) {
+        Object.assign(where, { parentId: null });
+      } else {
+        Object.assign(where, { parentId: this.parentId });
+      }
+
+      const existingFolder = await Folder.findOne({ where });
+      if (existingFolder) {
+        throw new Error("A folder with this name already exists in this location");
+      }
+    },
+    async isValidParent(this: Folder) {
+      if (this.parentId === this.id) {
+        throw new Error("Folder cannot be its own parent");
+      }
+      // Check for circular reference
+      if (this.parentId) {
+        let parent = await Folder.findByPk(this.parentId);
+        while (parent) {
+          if (parent.id === this.id) {
+            throw new Error("Circular folder reference detected");
+          }
+          parent = parent.parentId
+            ? await Folder.findByPk(parent.parentId)
+            : null;
+        }
+      }
+    },
+  },
 })
 @Index("unique_folder_name_in_parent")
 export class Folder extends Model<Folder> {
@@ -78,38 +116,5 @@ export class Folder extends Model<Folder> {
   declare updatedAt: Date;
   declare deletedAt: Date | null;
 
-  // Custom validation method
-  async uniqueNameInParent() {
-    const existingFolder = await Folder.findOne({
-      where: {
-        name: this.name,
-        parentId: this.parentId,
-        id: { [Op.ne]: this.id },
-      },
-    });
-    if (existingFolder) {
-      throw new Error(
-        "A folder with this name already exists in this location",
-      );
-    }
-  }
 
-  // Custom validation method
-  async isValidParent() {
-    if (this.parentId === this.id) {
-      throw new Error("Folder cannot be its own parent");
-    }
-    // Check for circular reference
-    if (this.parentId) {
-      let parent = await Folder.findByPk(this.parentId);
-      while (parent) {
-        if (parent.id === this.id) {
-          throw new Error("Circular folder reference detected");
-        }
-        parent = parent.parentId
-          ? await Folder.findByPk(parent.parentId)
-          : null;
-      }
-    }
-  }
 }
