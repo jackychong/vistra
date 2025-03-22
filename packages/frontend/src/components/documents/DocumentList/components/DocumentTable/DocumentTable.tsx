@@ -3,8 +3,8 @@ import { Box, IconButton, Paper, Stack, Typography, MenuItem, Menu } from "@mui/
 import { DataGrid } from "@mui/x-data-grid";
 import {
   MoreVert as MoreVertIcon,
-  Folder as FolderIcon,
-  InsertDriveFile as FileIcon,
+  FolderOpenOutlined as FolderIcon,
+  DescriptionOutlined as FileIcon,
 } from "@mui/icons-material";
 import { formatFileSize, Item } from "@/services/api";
 import type { DocumentTableProps, CustomFooterProps } from "./Component";
@@ -120,9 +120,9 @@ export const DocumentTable = ({
       minWidth: 200,
       sortable: true,
       renderCell: (params: any) => (
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <Stack direction="row" alignItems="center" spacing={2}>
           {params.row.itemType === "folder" ? (
-            <FolderIcon sx={{ color: "warning.main" }} />
+            <FolderIcon sx={{ color: "info.main" }} />
           ) : (
             <FileIcon sx={{ color: "info.main" }} />
           )}
@@ -155,7 +155,7 @@ export const DocumentTable = ({
       headerName: "File size",
       width: 120,
       sortable: false,
-      valueFormatter: (params: any) => {
+      renderCell: (params: any) => {
         return params?.row?.itemType === "file"
           ? formatFileSize(params.value)
           : "-";
@@ -257,6 +257,12 @@ export const DocumentTable = ({
           "& .MuiDataGrid-virtualScroller": {
             opacity: loading ? 0.5 : 1,
             transition: "opacity 0.2s ease-in-out",
+          },
+          "& .MuiDataGrid-sortIcon": {
+            opacity: 1
+          },
+          "& .MuiDataGrid-columnHeader .MuiIconButton-root:hover": {
+            backgroundColor: "transparent"
           },
         }}
       />
