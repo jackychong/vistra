@@ -13,6 +13,8 @@ import {
   StyledSelect,
   StyledPaginationItem,
   StyledDataGrid,
+  StyledNameCell,
+  StyledNameText,
 } from "./styles";
 
 const CustomFooter = ({ pagination, onPaginationChange }: CustomFooterProps) => {
@@ -120,14 +122,14 @@ export const DocumentTable = ({
       minWidth: 200,
       sortable: true,
       renderCell: (params: any) => (
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <StyledNameCell>
           {params.row.itemType === "folder" ? (
-            <FolderIcon sx={{ color: "info.main" }} />
+            <FolderIcon sx={{ color: "info.main", flexShrink: 0 }} />
           ) : (
-            <FileIcon sx={{ color: "info.main" }} />
+            <FileIcon sx={{ color: "info.main", flexShrink: 0 }} />
           )}
-          {params.value}
-        </Stack>
+          <StyledNameText>{params.value}</StyledNameText>
+        </StyledNameCell>
       ),
     },
     {

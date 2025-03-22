@@ -1,4 +1,4 @@
-import { Box, Select, Pagination, Theme } from "@mui/material";
+import { Box, Select, Pagination, Theme, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -19,6 +19,25 @@ export const StyledDataGrid = styled(DataGrid)(({ theme }: { theme: Theme }) => 
     backgroundColor: "transparent"
   },
 }));
+
+export const StyledNameCell = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  gap: "8px",
+  width: "100%",
+  overflow: "hidden",
+  height: "100%"
+});
+
+export const StyledNameText = styled(Typography)({
+  display: "flex",
+  alignItems: "center",
+  height: "100%",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis"
+});
 
 export const StyledFooter = styled(Box)(({ theme }: { theme: Theme }) => ({
   padding: "8px 16px",
