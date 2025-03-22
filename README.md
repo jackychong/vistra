@@ -50,6 +50,9 @@ docker compose exec backend pnpm backend <command>
 Make sure you have MySQL 8 installed and running on your machine.
 
 ```
+# Create database
+docker compose exec backend pnpm db:create
+
 # Migration
 docker compose exec backend pnpm backend migrate
 docker compose exec backend pnpm backend migrate:down

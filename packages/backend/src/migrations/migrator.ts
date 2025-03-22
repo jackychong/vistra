@@ -1,6 +1,6 @@
 import { Umzug, SequelizeStorage } from "umzug";
 import { Sequelize } from "sequelize-typescript";
-import { config } from "../config/database.js";
+import config from "../../config/database.cjs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
@@ -12,7 +12,7 @@ const sequelize = new Sequelize(config);
 export const migrator = new Umzug({
   migrations: {
     glob: ["*.ts", { cwd: __dirname, ignore: ["**/migrator.ts", "**/cli.ts"] }],
-    resolve: (params) => {
+    resolve: (params: { name: string; path: string }) => {
       return {
         name: params.name,
         path: params.path,

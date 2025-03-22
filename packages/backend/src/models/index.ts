@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
-import { config } from "../config/database.js";
+import config from "../../config/database.cjs";
 import { User } from "./User.js";
 import { Folder } from "./Folder.js";
 import { File } from "./File.js";
