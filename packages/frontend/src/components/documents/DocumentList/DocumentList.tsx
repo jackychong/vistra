@@ -151,7 +151,8 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
     // Always set sorting state to trigger API call
     setSorting({
       field: sortModel.length > 0 ? sortModel[0].field : "name",
-      order: sortModel.length > 0 && sortModel[0].sort === "asc" ? "ASC" : "DESC",
+      order:
+        sortModel.length > 0 && sortModel[0].sort === "asc" ? "ASC" : "DESC",
     });
   };
 
