@@ -119,7 +119,8 @@ export const UploadFilesDialog = ({
           setSuccessCount(result.data.success.length);
           setErrors(result.data.errors);
 
-          if (result.data.success.length > 0) {
+          // Call onSuccess when all files were uploaded successfully
+          if (result.data.success.length === files.length) {
             onSuccess();
           }
 
