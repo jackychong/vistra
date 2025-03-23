@@ -12,20 +12,18 @@ const sequelize = new Sequelize(config);
 export const migrator = new Umzug({
   migrations: {
     glob: ["*.ts", { cwd: __dirname, ignore: ["**/migrator.ts", "**/cli.ts"] }],
-    resolve: (params: { name: string; path: string }) => {
-      return {
-        name: params.name,
-        path: params.path,
-        up: async () => {
-          const migration = await import(`file://${params.path}`);
-          return migration.up({ context: sequelize.getQueryInterface() });
-        },
-        down: async () => {
-          const migration = await import(`file://${params.path}`);
-          return migration.down({ context: sequelize.getQueryInterface() });
-        },
-      };
-    },
+    resolve: (params: { name: string; path: string }) => ({
+      name: params.name,
+      path: params.path,
+      up: async () => {
+        const migration = await import(`file://${params.path}`);
+        return migration.up({ context: sequelize.getQueryInterface() });
+      },
+      down: async () => {
+        const migration = await import(`file://${params.path}`);
+        return migration.down({ context: sequelize.getQueryInterface() });
+      },
+    }),
   },
   context: sequelize.getQueryInterface(),
   storage: new SequelizeStorage({ sequelize }),

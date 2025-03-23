@@ -18,20 +18,18 @@ sequelize.addModels([User, Folder, File]);
 export const seeder = new Umzug({
   migrations: {
     glob: ["*.ts", { cwd: __dirname, ignore: ["**/seeder.ts", "**/cli.ts"] }],
-    resolve: (params) => {
-      return {
-        name: params.name,
-        path: params.path,
-        up: async () => {
-          const seeder = await import(`file://${params.path}`);
-          return seeder.up({ context: sequelize });
-        },
-        down: async () => {
-          const seeder = await import(`file://${params.path}`);
-          return seeder.down({ context: sequelize });
-        },
-      };
-    },
+    resolve: (params) => ({
+      name: params.name,
+      path: params.path,
+      up: async () => {
+        const seeder = await import(`file://${params.path}`);
+        return seeder.up({ context: sequelize });
+      },
+      down: async () => {
+        const seeder = await import(`file://${params.path}`);
+        return seeder.down({ context: sequelize });
+      },
+    }),
   },
   context: sequelize,
   storage: new SequelizeStorage({

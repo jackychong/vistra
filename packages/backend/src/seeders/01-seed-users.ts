@@ -1,7 +1,7 @@
 import type { Seeder } from "./seeder.js";
 import { User } from "../models/User.js";
 
-export const up: Seeder = async ({ context: sequelize }) => {
+export const up: Seeder = async () => {
   // Create users
   const users = await User.bulkCreate([
     {
@@ -24,7 +24,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
   return users;
 };
 
-export const down: Seeder = async ({ context: sequelize }) => {
+export const down: Seeder = async () => {
   await User.destroy({
     where: {
       name: ["Admin User", "Demo User", "Test User"],

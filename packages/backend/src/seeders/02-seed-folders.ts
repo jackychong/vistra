@@ -2,7 +2,7 @@ import type { Seeder } from "./seeder.js";
 import { User } from "../models/User.js";
 import { Folder } from "../models/Folder.js";
 
-export const up: Seeder = async ({ context: sequelize }) => {
+export const up: Seeder = async () => {
   // Get demo user
   const demoUser = await User.findOne({
     where: { name: "Demo User" },
@@ -207,7 +207,7 @@ export const up: Seeder = async ({ context: sequelize }) => {
   });
 };
 
-export const down: Seeder = async ({ context: sequelize }) => {
+export const down: Seeder = async () => {
   const demoUser = await User.findOne({
     where: { name: "Demo User" },
   });
