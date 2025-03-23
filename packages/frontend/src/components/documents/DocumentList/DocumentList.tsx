@@ -148,17 +148,11 @@ export const DocumentList = ({ folderId }: DocumentListProps) => {
   };
 
   const handleSortChange = (sortModel: GridSortModel) => {
-    if (sortModel.length > 0) {
-      setSorting({
-        field: sortModel[0].field,
-        order: sortModel[0].sort === "asc" ? "ASC" : "DESC",
-      });
-    } else {
-      setSorting({
-        field: "name",
-        order: "ASC",
-      });
-    }
+    // Always set sorting state to trigger API call
+    setSorting({
+      field: sortModel.length > 0 ? sortModel[0].field : "name",
+      order: sortModel.length > 0 && sortModel[0].sort === "asc" ? "ASC" : "DESC",
+    });
   };
 
   const handleSelectionChange = (selectionModel: number[]) => {
