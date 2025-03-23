@@ -12,6 +12,22 @@ This project implements a document management system that allows users to:
 
 The system consists of a frontend built with Next.js and TypeScript, and a backend API built with Node.js, TypeScript and MySQL.
 
+## Demo
+Product Demo Video - https://www.loom.com/share/855f8485d0274238b3329d46645b8876?sid=5a641adc-56d8-4b2f-a8ab-bc09176a0aca
+
+Development Setup Video - https://www.loom.com/share/b90863e7f2a94d5db67ced305bb186af?sid=fd38b168-fea4-4763-89d4-125ec082f806
+
+## Screenshots
+Main                                                      |  Upload
+:--------------------------------------------------------:|:-----------------------------------------------------------------:
+<img src="docs/images/main.png" width="400" />            | <img src="docs/images/upload.png" width="400" />
+Upload multiple files                                     | Search
+<img src="docs/images/upload-multiple.png" width="400" /> | <img src="docs/images/search.png" width="400" />
+Create folder                                             | Create folder validation
+<img src="docs/images/create-folder.png" width="400" />   | <img src="docs/images/create-folder-validation.png" width="400" />
+Delete files                                              | Click into the folder
+<img src="docs/images/delete-files.png" width="400" />   | <img src="docs/images/hierarchical-folders.png" width="400" />
+
 ## Tech Stack
 
 ### Frontend
@@ -27,7 +43,6 @@ The system consists of a frontend built with Next.js and TypeScript, and a backe
 - MySQL 8 with Sequelize ORM
 - Database migration and seeding with umzug 
 - RESTful API architecture
-
 
 ## Product Features
 
@@ -48,6 +63,12 @@ The system consists of a frontend built with Next.js and TypeScript, and a backe
 - Show number of rows per page
 - Pagination by page number
 - Cached APIs calls with React Query
+
+**Improvements:**
+- Delete folder, only if the folder content is empty
+- Mass delete files
+- Rename file
+- Move files and folders
 
 ## Project Structure
 
@@ -141,10 +162,6 @@ React hooks for data management:
    # Install asdf (if not already installed)
    brew install asdf
 
-   # asdf extra configuration
-   # see https://asdf-vm.com/guide/getting-started.html#_2-configure-asdf
-   export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-
    # Add required plugins
    asdf plugin add nodejs
    asdf plugin add pnpm
@@ -152,9 +169,9 @@ React hooks for data management:
    # Install versions from .tool-versions
    asdf install
 
-   # Set versions globally (optional)
-   asdf global nodejs 20.19.0
-   asdf global pnpm 10.6.3
+   # asdf extra configuration
+   # see https://asdf-vm.com/guide/getting-started.html#_2-configure-asdf
+   export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
    # Start MySQL container -- skip this if you have MySQL installed on your localhost
    # Please note that the port 3307 is set to avoid conflict with local MySQL instance
@@ -189,20 +206,27 @@ React hooks for data management:
    - Frontend configuration:
      ```bash
      cd packages/frontend
-     cp .env.example .env.local
+     cp env.example .env
      # Update API URL if backend is running on a different port
      ```
 
 4. Setup database:
 
    # Run migrations and seed data
+   ```
    cd packages/backend
-   pnpm run migrate  # Run database migrations
-   pnpm run seed    # Populate with sample data
+   pnpm run db:create # Create database
+   pnpm run migrate   # Run database migrations
+   pnpm run seed      # Populate with sample data
    ```
 
 5. Start development servers:
    ```bash
+   # Start both backend and frontend
+   pnpm dev
+
+   #
+   # ---- OR individually ----
    # Start backend
    cd packages/backend
    pnpm run dev
@@ -227,3 +251,9 @@ The MySQL database includes tables for:
 - Users
 - Folders (hierarchical structure)
 - Documents/Files
+
+# Caveats
+Due to the nature of the project and the time limitations, git workflow and 
+commit messages are not followed. Git commits are squashed, cherry picked and 
+rebased. The commit timestamps are not the real representation of the actual
+implementation flow.
